@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-primary: #005592;
+  --color-brand-hover: #0066AE;
+  --color-brand-accent: #0066AE;
+  --color-brand-sky: #66B2E0;
+  --color-brand-dark: #0F172A;
+  --color-brand-soft: #EBF4FA;
+  --color-brand-tint: #E3F2FD;
+  --font-heading: var(--font-heading), system-ui, -apple-system, sans-serif;
+  --font-serif: var(--font-serif), Georgia, serif;
+  --font-sans: var(--font-sans), system-ui, -apple-system, sans-serif;
+}
+
+:root {
+  --brand-primary: #005592;
+  --brand-hover: #0066AE;
+  --brand-accent: #0066AE;
+  --brand-sky: #66B2E0;
+  --brand-dark: #0F172A;
+  --brand-soft: #EBF4FA;
+  caret-color: #005592;
+}
+
+body {
+  color: #0f172a;
+  background-color: #F8FAFC;
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-padding-top: 88px;
+}
+
+section[id] {
+  scroll-margin-top: 88px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: -0.025em;
+}
+
+.font-serif {
+  font-family: var(--font-serif), Georgia, serif;
+}
+
+::selection {
+  background-color: #005592;
+  color: #ffffff;
+}
+
+/* Custom Sleek Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+  border: 2px solid #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #005592;
+}
+
+/* Accessible Focus Rings */
+:focus-visible {
+  outline: 2px solid #005592;
+  outline-offset: 2px;
+}
+
+.booking-calendar {
+  --rdp-accent-color: #005592;
+  --rdp-accent-background-color: #ebf4fa;
+  --rdp-day-height: 44px;
+  --rdp-day-width: 44px;
+  margin: 0;
+  width: 100%;
+}
+
+.booking-calendar .rdp-months,
+.booking-calendar .rdp-month,
+.booking-calendar .rdp-month_grid {
+  width: 100%;
+  max-width: none;
+}
+
+.booking-calendar .rdp-day_button {
+  margin: auto;
+  border-radius: 8px;
+  font-size: 0.875rem;
+}
+
+.booking-calendar .rdp-booked:not(.rdp-selected) .rdp-day_button {
+  box-shadow: inset 0 -3px 0 #005592;
+  color: #004475;
+  font-weight: 700;
+}
+
+.booking-calendar .rdp-disabled {
+  color: #94a3b8;
+  text-decoration: line-through;
+}
+
+.booking-calendar .rdp-chevron {
+  fill: #005592;
+}
