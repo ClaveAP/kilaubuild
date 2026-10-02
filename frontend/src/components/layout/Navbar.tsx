@@ -7,12 +7,11 @@ import { ArrowUpRight, Menu, X } from "lucide-react";
 
 const navLinks = [
   { name: "Beranda", href: "#hero", id: "hero" },
-  { name: "Tentang", href: "#tentang", id: "tentang" },
+  { name: "Proyek", href: "#portofolio", id: "portofolio" },
+  { name: "Cara kerja", href: "#tentang", id: "tentang" },
   { name: "Layanan", href: "#layanan", id: "layanan" },
-  { name: "Portofolio", href: "#portofolio", id: "portofolio" },
   { name: "Interior", href: "#interior", id: "interior" },
   { name: "FAQ", href: "#faq", id: "faq" },
-  { name: "Kontak", href: "#kontak", id: "kontak" },
 ];
 
 export const Navbar = () => {
@@ -23,119 +22,123 @@ export const Navbar = () => {
     const sections = navLinks
       .map((link) => document.getElementById(link.id))
       .filter((section): section is HTMLElement => section !== null);
-
     const observer = new IntersectionObserver(
       (entries) => {
         const visibleSection = entries
           .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-
+          .sort((first, second) => second.intersectionRatio - first.intersectionRatio)[0];
         if (visibleSection) setActiveSection(visibleSection.target.id);
       },
-      { rootMargin: "-18% 0px -68% 0px", threshold: [0, 0.15, 0.35] },
+      { rootMargin: "-15% 0px -60% 0px", threshold: [0, 0.2, 0.45] },
     );
 
     sections.forEach((section) => observer.observe(section));
     return () => observer.disconnect();
   }, []);
 
-  return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-slate-200/80 bg-white/95 shadow-[0_10px_35px_-28px_rgba(15,23,42,0.55)] backdrop-blur-md">
-      <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link
-          href="#hero"
-          onClick={() => setActiveSection("hero")}
-          className="group flex min-h-11 items-center gap-2.5 rounded-md focus-visible:outline-none"
-          aria-label="KilauBuild, kembali ke beranda"
-        >
-          <span className="relative h-9 w-9 shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-white">
-            <Image src="/logo.png" alt="" fill sizes="36px" className="object-contain p-1" priority />
-          </span>
-          <span className="font-serif text-[1.55rem] font-semibold leading-none text-slate-950 transition-colors group-hover:text-[#005592]">
-            KilauBuild
-          </span>
-        </Link>
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsOpen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
 
-        <nav aria-label="Navigasi utama" className="hidden items-center gap-0.5 lg:flex">
-          {navLinks.map((link) => {
+  const brand = (
+    <Link
+      href="#hero"
+      onClick={() => {
+        setActiveSection("hero");
+        setIsOpen(false);
+      }}
+      className="group flex min-h-12 items-center gap-3"
+      aria-label="KilauBuild, kembali ke beranda"
+    >
+      <span className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-white">
+        <Image src="/logo.png" alt="" fill sizes="40px" className="object-contain" />
+      </span>
+      <span className="text-lg font-extrabold leading-none tracking-[-0.04em] text-[#0A1E2F] transition-colors group-hover:text-[#005592]">
+        KilauBuild
+      </span>
+    </Link>
+  );
+
+  return (
+    <>
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-[#D7E4EB] bg-[#F7FBFD]/96 px-5 backdrop-blur-md lg:hidden">
+        <div className="flex h-[72px] items-center justify-between">
+          {brand}
+          <button
+            type="button"
+            onClick={() => setIsOpen((current) => !current)}
+            className="flex h-11 w-11 items-center justify-center rounded-lg border border-[#C9DCE7] text-[#004475]"
+            aria-expanded={isOpen}
+            aria-controls="mobile-navigation"
+            aria-label={isOpen ? "Tutup menu navigasi" : "Buka menu navigasi"}
+          >
+            {isOpen ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
+          </button>
+        </div>
+        {isOpen && (
+          <nav id="mobile-navigation" aria-label="Navigasi mobile" className="border-t border-[#D7E4EB] py-4">
+            <div className="grid gap-1">
+              {navLinks.map((link) => (
+                <a
+                  key={link.id}
+                  href={link.href}
+                  onClick={() => {
+                    setActiveSection(link.id);
+                    setIsOpen(false);
+                  }}
+                  className={`flex min-h-12 items-center rounded-lg px-3 text-sm font-semibold ${activeSection === link.id ? "bg-[#E3F2FD] text-[#005592]" : "text-[#294153]"}`}
+                >
+                  {link.name}
+                </a>
+              ))}
+              <a href="#booking" onClick={() => setIsOpen(false)} className="button-primary mt-3 w-full">
+                Jadwalkan survey <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+              </a>
+            </div>
+          </nav>
+        )}
+      </header>
+
+      <aside className="fixed inset-y-0 left-0 z-50 hidden w-[244px] flex-col overflow-y-auto border-r border-[#D7E4EB] bg-[#F3F9FC] px-7 py-8 lg:flex">
+        {brand}
+        <p className="mt-2 pl-[52px] text-[10px] font-semibold tracking-[0.12em] text-[#5D7889]">
+          DEPOK · JABODETABEK
+        </p>
+        <span className="mt-20 h-px w-8 bg-[#66B2E0]" aria-hidden="true" />
+        <p className="mt-5 text-[10px] font-bold tracking-[0.18em] text-[#005592]">JELAJAHI</p>
+        <nav aria-label="Navigasi utama" className="mt-4 grid gap-1">
+          {navLinks.map((link, index) => {
             const isActive = activeSection === link.id;
             return (
               <a
                 key={link.id}
                 href={link.href}
-                aria-current={isActive ? "page" : undefined}
+                aria-current={isActive ? "location" : undefined}
                 onClick={() => setActiveSection(link.id)}
-                className={`rounded-full px-3 py-2 text-xs font-semibold transition-colors ${
-                  isActive
-                    ? "bg-[#EBF4FA] text-[#005592]"
-                    : "text-slate-600 hover:bg-slate-100 hover:text-slate-950"
-                }`}
+                className={`group flex min-h-12 items-center gap-4 border-l-2 pl-3 text-sm transition-colors ${isActive ? "border-[#005592] font-bold text-[#005592]" : "border-transparent font-medium text-[#526474] hover:border-[#66B2E0] hover:text-[#004475]"}`}
               >
+                <span className="font-numeric w-5 text-[10px] font-semibold text-[#86A1B1]">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
                 {link.name}
               </a>
             );
           })}
         </nav>
-
-        <div className="flex items-center gap-2">
-          <a
-            href="#booking"
-            className="group hidden min-h-11 items-center gap-2 rounded-full bg-slate-950 py-2 pl-4 pr-2 text-xs font-semibold text-white transition-colors hover:bg-[#005592] sm:inline-flex"
-          >
-            <span>Jadwal Survey</span>
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#005592] transition-colors group-hover:bg-white group-hover:text-[#005592]">
-              <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-            </span>
+        <div className="mt-auto border-t border-[#D7E4EB] pt-6">
+          <p className="max-w-[17ch] text-sm leading-6 text-[#526474]">
+            Rumah dibangun dengan proses yang jelas.
+          </p>
+          <a href="#booking" className="button-primary mt-6 w-full">
+            Mulai konsultasi <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
           </a>
-
-          <button
-            type="button"
-            onClick={() => setIsOpen((current) => !current)}
-            className="flex h-11 w-11 items-center justify-center rounded-lg bg-slate-100 text-slate-800 transition-colors hover:bg-slate-200 lg:hidden"
-            aria-expanded={isOpen}
-            aria-controls="mobile-navigation"
-            aria-label={isOpen ? "Tutup menu navigasi" : "Buka menu navigasi"}
-          >
-            {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
         </div>
-      </div>
-
-      {isOpen && (
-        <nav
-          id="mobile-navigation"
-          aria-label="Navigasi mobile"
-          className="border-t border-slate-200 bg-white px-4 py-4 shadow-lg lg:hidden"
-        >
-          <div className="mx-auto grid max-w-7xl gap-1">
-            {navLinks.map((link) => (
-              <a
-                key={link.id}
-                href={link.href}
-                onClick={() => {
-                  setActiveSection(link.id);
-                  setIsOpen(false);
-                }}
-                className={`flex min-h-11 items-center rounded-lg px-3 text-sm font-semibold ${
-                  activeSection === link.id
-                    ? "bg-[#EBF4FA] text-[#005592]"
-                    : "text-slate-700 hover:bg-slate-100"
-                }`}
-              >
-                {link.name}
-              </a>
-            ))}
-            <a
-              href="#booking"
-              onClick={() => setIsOpen(false)}
-              className="mt-2 flex min-h-11 items-center justify-center gap-2 rounded-lg bg-[#005592] px-4 text-sm font-semibold text-white hover:bg-[#0066AE]"
-            >
-              Jadwal Survey Gratis
-              <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-            </a>
-          </div>
-        </nav>
-      )}
-    </header>
+      </aside>
+    </>
   );
 };

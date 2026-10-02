@@ -191,35 +191,35 @@ export const BookingSection = () => {
   };
 
   return (
-    <section id="booking" className="relative bg-transparent py-20">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-12">
+    <section id="booking" className="site-grid bg-[#F4F7F8] py-20 sm:py-28">
+      <div className="site-shell">
+        <div className="grid items-start gap-12 lg:grid-cols-12 lg:gap-16">
           <div className="space-y-6 lg:col-span-5">
-            <h2 className="font-serif text-3xl font-bold leading-tight text-slate-900 sm:text-4xl">
-              Jadwalkan Survey Lokasi & <span className="text-[#005592]">Konsultasi Gratis</span>
+            <h2 className="section-heading">
+              Pilih sendiri waktu survey lokasi.
             </h2>
 
-            <p className="text-base leading-relaxed text-slate-600">
-              Pilih hari kerja dan tentukan sendiri jam kedatangan tim kami. Survey tersedia Senin–Jumat, pukul 09.00–20.00 WIB.
+            <p className="section-copy">
+              Survey tersedia Senin sampai Jumat, pukul 09.00–20.00 WIB. Kalender menampilkan tanggal dan jam yang sudah terisi.
             </p>
 
-            <dl className="border-y border-slate-300/80">
+            <dl className="border-y border-[#9DB3BF]">
               <div className="grid gap-2 py-5 sm:grid-cols-[10rem_1fr] sm:gap-6">
-                <dt className="font-serif text-lg font-semibold text-slate-950">Kalender terbuka</dt>
-                <dd className="text-sm leading-6 text-slate-600">
+                <dt className="text-lg font-bold text-[#0A1E2F]">Kalender terbuka</dt>
+                <dd className="text-sm leading-6 text-[#526474]">
                   Tanggal bertanda biru sudah memiliki jadwal. Pilih tanggalnya untuk melihat jam yang terisi.
                 </dd>
               </div>
-              <div className="grid gap-2 border-t border-slate-200 py-5 sm:grid-cols-[10rem_1fr] sm:gap-6">
-                <dt className="font-serif text-lg font-semibold text-slate-950">RAB terbuka</dt>
-                <dd className="text-sm leading-6 text-slate-600">
+              <div className="grid gap-2 border-t border-[#CBD8DF] py-5 sm:grid-cols-[10rem_1fr] sm:gap-6">
+                <dt className="text-lg font-bold text-[#0A1E2F]">RAB terperinci</dt>
+                <dd className="text-sm leading-6 text-[#526474]">
                   Setelah survey, Anda menerima rincian material dan biaya untuk dipelajari tanpa komitmen.
                 </dd>
               </div>
             </dl>
 
             <div className="pt-2">
-              <p className="mb-2 text-xs font-medium text-slate-500">Perlu jawaban lebih cepat?</p>
+              <p className="mb-2 text-xs font-semibold text-[#526474]">Perlu jawaban lebih cepat?</p>
               <a
                 href="https://wa.me/6287776360795"
                 target="_blank"
@@ -227,19 +227,19 @@ export const BookingSection = () => {
                 className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-[#005592] transition-colors hover:text-[#0066AE]"
               >
                 <Phone className="h-4 w-4 text-[#25D366]" aria-hidden="true" />
-                <span>WhatsApp +62 877-7636-0795</span>
+                <span>WhatsApp <span className="font-numeric">+62 877-7636-0795</span></span>
               </a>
             </div>
           </div>
 
-          <div className="rounded-2xl bg-white p-6 shadow-[0_24px_70px_-48px_rgba(15,23,42,0.55)] sm:p-10 lg:col-span-7">
+          <div className="rounded-2xl border border-[#B8CAD4] bg-white p-6 shadow-[0_24px_70px_-48px_rgba(0,68,117,0.55)] sm:p-9 lg:col-span-7">
             {successData ? (
               <div className="space-y-6 py-8 text-center">
                 <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#EBF4FA] text-[#005592]">
                   <CheckCircle2 className="h-9 w-9" aria-hidden="true" />
                 </div>
                 <div>
-                  <h3 className="font-serif text-2xl font-semibold text-slate-950">Jadwal survey sudah tercatat.</h3>
+                  <h3 className="text-2xl font-bold text-[#0A1E2F]">Jadwal survey sudah tercatat.</h3>
                   <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-600">
                     Terima kasih, <strong>{successData.booking.clientName}</strong>. Kami mencatat kunjungan pada {formatDisplayDate(selectedDate)} pukul {selectedTime} WIB.
                   </p>
@@ -282,7 +282,7 @@ export const BookingSection = () => {
             ) : (
               <form onSubmit={handleSubmit} className="space-y-7">
                 <div className="border-b border-slate-200 pb-4">
-                  <h3 className="font-serif text-2xl font-semibold text-slate-950">Pilih jadwal kunjungan</h3>
+                  <h3 className="text-2xl font-bold text-[#0A1E2F]">Pilih jadwal kunjungan</h3>
                   <p className="mt-1 text-sm text-slate-500">Hari kerja, 09.00–20.00 WIB. Waktu ditampilkan dalam zona Jakarta.</p>
                 </div>
 
@@ -328,7 +328,7 @@ export const BookingSection = () => {
                   <div className="space-y-5 border-t border-slate-200 pt-5 xl:border-l xl:border-t-0 xl:pl-6 xl:pt-0">
                     <div>
                       <p className="text-xs font-semibold text-[#005592]">Tanggal dipilih</p>
-                      <p className="mt-1 font-serif text-lg font-semibold leading-snug text-slate-950">{formatDisplayDate(selectedDate)}</p>
+                      <p className="mt-1 text-lg font-bold leading-snug text-[#0A1E2F]">{formatDisplayDate(selectedDate)}</p>
                     </div>
                     <div>
                       <label htmlFor="booking-time" className="text-sm font-semibold text-slate-900">Jam kedatangan</label>
@@ -347,7 +347,7 @@ export const BookingSection = () => {
                           }}
                           aria-describedby="booking-time-hint"
                           required
-                          className="min-h-12 w-full rounded-xl border border-slate-300 bg-white py-2.5 pl-10 pr-3 text-base text-slate-950 focus:border-[#005592] focus:outline-none focus:ring-2 focus:ring-[#005592]/20"
+                          className="form-field py-2.5 pl-10 pr-3"
                         />
                       </div>
                       <p id="booking-time-hint" className="mt-2 text-xs leading-5 text-slate-500">Pilih per 30 menit, dari 09.00 sampai 20.00 WIB.</p>
@@ -380,7 +380,7 @@ export const BookingSection = () => {
                       id="booking-service"
                       value={formData.serviceType}
                       onChange={(event) => setFormData({ ...formData, serviceType: event.target.value })}
-                      className="min-h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-base text-slate-950 focus:border-[#005592] focus:outline-none focus:ring-2 focus:ring-[#005592]/20"
+                      className="form-field"
                     >
                       <option value="Bangun Rumah Baru">Bangun Rumah Baru</option>
                       <option value="Renovasi Total">Renovasi Total</option>
@@ -390,30 +390,30 @@ export const BookingSection = () => {
                   </div>
                   <div>
                     <label htmlFor="booking-name" className="mb-1.5 block text-sm font-semibold text-slate-800">Nama lengkap</label>
-                    <input id="booking-name" type="text" value={formData.clientName} onChange={(event) => setFormData({ ...formData, clientName: event.target.value })} required className="min-h-12 w-full rounded-xl border border-slate-300 px-4 text-base text-slate-950 focus:border-[#005592] focus:outline-none focus:ring-2 focus:ring-[#005592]/20" />
+                    <input id="booking-name" type="text" autoComplete="name" value={formData.clientName} onChange={(event) => setFormData({ ...formData, clientName: event.target.value })} required className="form-field" />
                   </div>
                   <div>
                     <label htmlFor="booking-phone" className="mb-1.5 block text-sm font-semibold text-slate-800">Nomor WhatsApp</label>
-                    <input id="booking-phone" type="tel" value={formData.phone} onChange={(event) => setFormData({ ...formData, phone: event.target.value })} required className="min-h-12 w-full rounded-xl border border-slate-300 px-4 text-base text-slate-950 focus:border-[#005592] focus:outline-none focus:ring-2 focus:ring-[#005592]/20" />
+                    <input id="booking-phone" type="tel" autoComplete="tel" value={formData.phone} onChange={(event) => setFormData({ ...formData, phone: event.target.value })} required className="form-field" />
                   </div>
                   <div>
                     <label htmlFor="booking-email" className="mb-1.5 block text-sm font-semibold text-slate-800">Alamat email</label>
-                    <input id="booking-email" type="email" value={formData.email} onChange={(event) => setFormData({ ...formData, email: event.target.value })} required className="min-h-12 w-full rounded-xl border border-slate-300 px-4 text-base text-slate-950 focus:border-[#005592] focus:outline-none focus:ring-2 focus:ring-[#005592]/20" />
+                    <input id="booking-email" type="email" autoComplete="email" value={formData.email} onChange={(event) => setFormData({ ...formData, email: event.target.value })} required className="form-field" />
                   </div>
                   <div className="sm:col-span-2">
                     <label htmlFor="booking-location" className="mb-1.5 block text-sm font-semibold text-slate-800">Lokasi proyek</label>
-                    <input id="booking-location" type="text" value={formData.location} onChange={(event) => setFormData({ ...formData, location: event.target.value })} required className="min-h-12 w-full rounded-xl border border-slate-300 px-4 text-base text-slate-950 focus:border-[#005592] focus:outline-none focus:ring-2 focus:ring-[#005592]/20" />
+                    <input id="booking-location" type="text" autoComplete="street-address" value={formData.location} onChange={(event) => setFormData({ ...formData, location: event.target.value })} required className="form-field" />
                   </div>
                   <div className="sm:col-span-2">
                     <label htmlFor="booking-notes" className="mb-1.5 block text-sm font-semibold text-slate-800">Catatan tambahan <span className="font-normal text-slate-500">(opsional)</span></label>
-                    <textarea id="booking-notes" rows={3} value={formData.notes} onChange={(event) => setFormData({ ...formData, notes: event.target.value })} className="w-full rounded-xl border border-slate-300 px-4 py-3 text-base text-slate-950 focus:border-[#005592] focus:outline-none focus:ring-2 focus:ring-[#005592]/20" />
+                    <textarea id="booking-notes" rows={3} value={formData.notes} onChange={(event) => setFormData({ ...formData, notes: event.target.value })} className="form-field min-h-28 resize-y" />
                   </div>
                 </div>
 
                 <button
                   type="submit"
                   disabled={submitting || selectedTimeIsBooked}
-                  className="flex min-h-12 w-full items-center justify-center rounded-xl bg-[#005592] px-6 text-sm font-semibold text-white transition-colors hover:bg-[#0066AE] disabled:cursor-not-allowed disabled:bg-slate-400"
+                  className="button-primary w-full disabled:bg-[#80909A]"
                 >
                   {submitting ? "Menyimpan jadwal..." : "Ajukan Booking Survey Gratis"}
                 </button>

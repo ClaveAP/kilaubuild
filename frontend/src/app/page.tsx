@@ -13,19 +13,23 @@ import { Footer } from "@/components/layout/Footer";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#F8FAFC]">
+    <>
       <Navbar />
-      <HeroSection />
-      <AboutSection />
-      <StatsSection />
-      <ServicesSection />
-      <PortfolioSection />
-      <InteriorSection />
-      <BookingSection />
-      <TestimonialsSection />
-      <FaqSection />
-      <ContactSection />
-      <Footer />
-    </main>
+      <main id="main-content" className="min-h-screen overflow-hidden bg-white lg:ml-[244px]">
+        <HeroSection />
+        <PortfolioSection />
+        <AboutSection />
+        <StatsSection />
+        <ServicesSection />
+        <InteriorSection />
+        <TestimonialsSection />
+        <BookingSection />
+        <FaqSection />
+        <ContactSection />
+      </main>
+      <div className="lg:ml-[244px]">
+        <Footer />
+      </div>
+    </>
   );
 }

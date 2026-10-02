@@ -1,102 +1,98 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { getApiData, resolveMediaUrl } from "@/lib/api";
 import { fallbackInteriors, type InteriorItem } from "./landing-data";
 
-export const InteriorSection: React.FC = () => {
+const categories = ["Semua", "Living Room", "Kitchen Set", "Bedroom", "Bathroom"];
+
+export const InteriorSection = () => {
   const [interiors, setInteriors] = useState<InteriorItem[]>(fallbackInteriors);
-  const [filter, setFilter] = useState<string>("Semua");
+  const [filter, setFilter] = useState("Semua");
 
   useEffect(() => {
     const fetchInterior = async () => {
       try {
         const data = await getApiData<InteriorItem[]>("/desain-interiors");
-        if (data.length > 0) {
-          setInteriors(data);
-        }
-      } catch (err: unknown) {
-        console.warn("Gagal memuat galeri interior backend, menggunakan foto lokal:", err);
+        if (data.length > 0) setInteriors(data);
+      } catch (error: unknown) {
+        console.warn("Gagal memuat galeri interior backend, menggunakan foto lokal:", error);
       }
     };
+
     fetchInterior();
   }, []);
-
-  const categories = ["Semua", "Living Room", "Kitchen Set", "Bedroom", "Bathroom"];
 
   const filteredItems =
     filter === "Semua"
       ? interiors
-      : interiors.filter(
-          (i) => i.roomType.toLowerCase() === filter.toLowerCase(),
-        );
+      : interiors.filter((item) => item.roomType.toLowerCase() === filter.toLowerCase());
 
   return (
-    <section id="interior" className="py-20 bg-transparent">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EBF4FA] text-[#005592] text-xs font-semibold uppercase tracking-wider mb-4 border border-[#66B2E0]/30">
-            Katalog Desain Interior
-          </div>
-          <h2 className="text-3xl sm:text-4xl font-serif font-bold text-slate-900 tracking-tight mb-4">
-            Galeri Interior & Custom <span className="text-[#005592]">Furniture</span>
-          </h2>
-          <p className="text-base text-slate-600 leading-relaxed">
-            Perpaduan keindahan estetika dan fungsionalitas ruang dengan pengerjaan presisi dan material HPL multiplek grade A.
-          </p>
-
-          {/* Filter Pills */}
-          <div className="flex flex-wrap justify-center gap-2 mt-8">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setFilter(cat)}
-                className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
-                  filter === cat
-                    ? "bg-[#005592] text-white shadow-sm"
-                    : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
+    <section id="interior" className="site-grid bg-[#EAF3F8] py-20 sm:py-28">
+      <div className="site-shell">
+        <div className="grid gap-9 lg:grid-cols-12 lg:items-end">
+          <h2 className="section-heading lg:col-span-7">Ruang yang terasa pas setiap hari.</h2>
+          <div className="lg:col-span-5">
+            <p className="section-copy">
+              Layout, ukuran furnitur, penyimpanan, dan pilihan material disesuaikan dengan kebiasaan penghuni serta ukuran ruang yang tersedia.
+            </p>
           </div>
         </div>
 
-        {/* Interior Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredItems.map((item) => (
-            <div
-              key={item.id}
-              className="bg-white rounded-[28px] overflow-hidden border border-slate-200/80 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col group"
+        <div className="mt-10 flex gap-1 overflow-x-auto border-b border-[#9DB3BF] pb-px" role="group" aria-label="Filter galeri interior">
+          {categories.map((category) => (
+            <button
+              key={category}
+              type="button"
+              onClick={() => setFilter(category)}
+              aria-pressed={filter === category}
+              className={`min-h-11 shrink-0 border-b-2 px-4 text-sm font-bold transition-colors ${
+                filter === category
+                  ? "border-[#005592] text-[#005592]"
+                  : "border-transparent text-[#526474] hover:border-[#9DB3BF] hover:text-[#0A1E2F]"
+              }`}
             >
-              <div className="relative h-64 w-full bg-slate-100 overflow-hidden">
-                <Image
-                  src={resolveMediaUrl(item.imageUrl)}
-                  alt={`${item.roomType} - ${item.style}`}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md text-white text-xs font-semibold px-3 py-1 rounded-full">
-                  {item.roomType}
-                </div>
-              </div>
-              <div className="p-6">
-                <div className="text-xs font-bold text-[#005592] uppercase tracking-wider mb-1">
-                  {item.style}
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  {item.roomType}
-                </h3>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  {item.description || "Sentuhan interior modern presisi karya workshop KilauBuild."}
-                </p>
-              </div>
-            </div>
+              {category}
+            </button>
           ))}
         </div>
+
+        {filteredItems.length > 0 ? (
+          <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-12">
+            {filteredItems.map((item, index) => (
+              <figure
+                key={item.id}
+                className={`group relative min-h-[360px] overflow-hidden rounded-2xl bg-[#D9E7EF] ${
+                  index === 0 ? "lg:col-span-7 lg:min-h-[560px]" : "lg:col-span-5"
+                }`}
+              >
+                <Image
+                  src={resolveMediaUrl(item.imageUrl)}
+                  alt={`${item.roomType}, gaya ${item.style}`}
+                  fill
+                  sizes={index === 0 ? "(max-width: 1024px) 100vw, 58vw" : "(max-width: 1024px) 50vw, 42vw"}
+                  className="object-cover transition-transform duration-500 group-hover:scale-[1.025]"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#071A2B]/88 via-transparent to-transparent" />
+                <figcaption className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-7">
+                  <p className="text-xs font-bold text-[#B9D8E9]">{item.style}</p>
+                  <h3 className="mt-2 text-2xl font-bold text-white">{item.roomType}</h3>
+                  {item.description && <p className="mt-2 max-w-lg text-sm leading-6 text-white/80">{item.description}</p>}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        ) : (
+          <div className="mt-8 rounded-2xl border border-[#9DB3BF] bg-white px-6 py-12 text-center">
+            <h3 className="text-xl font-bold text-[#0A1E2F]">Belum ada proyek untuk kategori ini.</h3>
+            <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[#526474]">Pilih Semua untuk kembali melihat galeri interior yang tersedia.</p>
+            <button type="button" onClick={() => setFilter("Semua")} className="button-secondary mt-5">
+              Lihat semua interior
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );

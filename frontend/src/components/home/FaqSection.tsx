@@ -1,73 +1,65 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { getApiData } from "@/lib/api";
+import { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { getApiData } from "@/lib/api";
 import { fallbackFaqs, type FaqItem } from "./landing-data";
 
-export const FaqSection: React.FC = () => {
+export const FaqSection = () => {
   const [faqs, setFaqs] = useState<FaqItem[]>(fallbackFaqs);
-  const [openIdx, setOpenIdx] = useState<number | null>(0); // First one open by default
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   useEffect(() => {
     const fetchFaqs = async () => {
       try {
         const data = await getApiData<FaqItem[]>("/faqs");
-        if (data.length > 0) {
-          setFaqs(data);
-        }
-      } catch (err: unknown) {
-        console.warn("Gagal memuat FAQ backend, menggunakan data lokal:", err);
+        if (data.length > 0) setFaqs(data);
+      } catch (error: unknown) {
+        console.warn("Gagal memuat FAQ backend, menggunakan data lokal:", error);
       }
     };
+
     fetchFaqs();
   }, []);
 
-  const toggle = (idx: number) => {
-    setOpenIdx(openIdx === idx ? null : idx);
-  };
-
   return (
-    <section id="faq" className="py-20 bg-transparent">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EBF4FA] text-[#005592] text-xs font-semibold uppercase tracking-wider mb-4 border border-[#66B2E0]/30">
-            Pertanyaan Umum (FAQ)
-          </div>
-          <h2 className="text-3xl sm:text-4xl font-serif font-bold text-slate-900 tracking-tight mb-4">
-            Semua yang Perlu Anda <span className="text-[#005592]">Ketahui</span>
-          </h2>
-          <p className="text-base text-slate-600 leading-relaxed">
-            Transparansi adalah prioritas kami. Temukan jawaban seputar alur kerja, sistem termin &quot;Bangun Dulu Baru Bayar&quot;, dan garansi proyek KilauBuild.
+    <section id="faq" className="bg-[#EAF3F8] py-20 sm:py-28">
+      <div className="site-shell grid gap-12 lg:grid-cols-12 lg:gap-16">
+        <div className="lg:col-span-5">
+          <h2 className="section-heading">Pertanyaan sebelum mulai.</h2>
+          <p className="section-copy mt-6">
+            Baca penjelasan tentang termin, survey, area layanan, dan garansi. Jika kebutuhan Anda berbeda, bicarakan langsung dengan tim kami.
           </p>
+          <a href="https://wa.me/6287776360795" target="_blank" rel="noopener noreferrer" className="button-secondary mt-7">
+            Tanya lewat WhatsApp
+          </a>
         </div>
 
-        <div className="space-y-4">
-          {faqs.map((faq, idx) => {
-            const isOpen = openIdx === idx;
-            return (
-              <div
-                key={faq.id}
-                className="border border-slate-200/80 bg-white rounded-2xl overflow-hidden transition-all duration-200 shadow-2xs"
-              >
-                <button
-                  onClick={() => toggle(idx)}
-                  className="w-full flex items-center justify-between p-6 text-left bg-white hover:bg-slate-50/50 transition-colors"
-                >
-                  <span className="text-base font-bold text-gray-900 pr-4">
-                    {faq.question}
-                  </span>
-                  <div
-                    className={`w-8 h-8 rounded-full bg-[#EBF4FA] text-[#005592] flex items-center justify-center shrink-0 transition-transform duration-200 ${
-                      isOpen ? "rotate-180 bg-[#005592] text-white" : ""
-                    }`}
-                  >
-                    <ChevronDown className="w-4 h-4" />
-                  </div>
-                </button>
+        <div className="border-y border-[#9DB3BF] lg:col-span-7">
+          {faqs.map((faq, index) => {
+            const isOpen = openIndex === index;
+            const panelId = `faq-panel-${faq.id}`;
+            const buttonId = `faq-button-${faq.id}`;
 
+            return (
+              <div key={faq.id} className={index > 0 ? "border-t border-[#B8CAD4]" : ""}>
+                <h3>
+                  <button
+                    id={buttonId}
+                    type="button"
+                    onClick={() => setOpenIndex(isOpen ? null : index)}
+                    aria-expanded={isOpen}
+                    aria-controls={panelId}
+                    className="flex min-h-20 w-full items-center justify-between gap-5 py-5 text-left"
+                  >
+                    <span className="text-base font-bold leading-6 text-[#0A1E2F] sm:text-lg">{faq.question}</span>
+                    <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors ${isOpen ? "bg-[#005592] text-white" : "bg-white text-[#005592]"}`}>
+                      <ChevronDown className={`h-5 w-5 transition-transform ${isOpen ? "rotate-180" : ""}`} aria-hidden="true" />
+                    </span>
+                  </button>
+                </h3>
                 {isOpen && (
-                  <div className="px-6 pb-6 pt-2 text-sm text-slate-600 leading-relaxed border-t border-slate-100 bg-slate-50/50 animate-in fade-in duration-150">
+                  <div id={panelId} role="region" aria-labelledby={buttonId} className="pb-7 pr-14 text-sm leading-7 text-[#526474] sm:text-base">
                     {faq.answer}
                   </div>
                 )}

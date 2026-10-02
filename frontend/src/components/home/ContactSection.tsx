@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
+import { AlertCircle, CheckCircle2, Mail, MapPin, Phone, Send } from "lucide-react";
 import { postApiData } from "@/lib/api";
-import { Send, MapPin, Phone, Mail, CheckCircle2, AlertCircle } from "lucide-react";
 
 interface ContactFormData {
   name: string;
@@ -12,224 +12,132 @@ interface ContactFormData {
   message: string;
 }
 
-export const ContactSection: React.FC = () => {
-  const [formData, setFormData] = useState<ContactFormData>({
-    name: "",
-    email: "",
-    phone: "",
-    subject: "",
-    message: "",
-  });
+const initialFormData: ContactFormData = {
+  name: "",
+  email: "",
+  phone: "",
+  subject: "",
+  message: "",
+};
 
-  const [loading, setLoading] = useState<boolean>(false);
-  const [success, setSuccess] = useState<boolean>(false);
+export const ContactSection = () => {
+  const [formData, setFormData] = useState<ContactFormData>(initialFormData);
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
     setError(null);
     setLoading(true);
 
     try {
       await postApiData<ContactFormData, ContactFormData>("/contacts", formData);
       setSuccess(true);
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        subject: "",
-        message: "",
-      });
-    } catch (err: unknown) {
-      interface ErrorResponse {
-        response?: {
-          data?: {
-            message?: string | string[];
-          };
-        };
+      setFormData(initialFormData);
+    } catch (submitError: unknown) {
+      const apiError = submitError as {
+        response?: { data?: { message?: string | string[] } };
         message?: string;
-      }
-      const apiErr = err as ErrorResponse;
-      const msg =
-        apiErr?.response?.data?.message ||
-        apiErr?.message ||
-        "Gagal mengirimkan pesan. Silakan coba kembali.";
-      setError(Array.isArray(msg) ? msg.join(", ") : msg);
+      };
+      const message =
+        apiError.response?.data?.message ??
+        apiError.message ??
+        "Pesan belum terkirim. Coba lagi atau hubungi kami melalui WhatsApp.";
+      setError(Array.isArray(message) ? message.join(", ") : message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <section id="kontak" className="py-20 bg-transparent">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          {/* Left Column: Office & Map Info */}
-          <div className="lg:col-span-5 space-y-6">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EBF4FA] text-[#005592] text-xs font-semibold uppercase tracking-wider mb-2 border border-[#66B2E0]/30">
-              Hubungi Kami Langsung
+    <section id="kontak" className="bg-[#004475] py-20 text-white sm:py-28">
+      <div className="site-shell grid gap-12 lg:grid-cols-12 lg:gap-16">
+        <div className="lg:col-span-5">
+          <h2 className="section-heading text-white">Ceritakan proyek Anda.</h2>
+          <p className="mt-6 max-w-xl text-base leading-7 text-[#D1E4EF]">
+            Kirim pertanyaan melalui formulir, telepon, atau datang ke workshop KilauBuild di Citayam, Depok.
+          </p>
+
+          <address className="mt-10 border-y border-white/20 not-italic">
+            <a
+              href="https://maps.google.com/?q=Jl.+Raya+Citayam+No.34+Depok"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="grid grid-cols-[2rem_1fr] gap-4 py-5 text-sm leading-6 text-white transition-colors hover:text-[#B9D8E9]"
+            >
+              <MapPin className="mt-0.5 h-5 w-5 text-[#8CC9EC]" aria-hidden="true" />
+              Jl. Raya Citayam No.34, RT.01/RW.04, Pd. Jaya, Cipayung, Kota Depok, Jawa Barat 16444
+            </a>
+            <a href="https://wa.me/6287776360795" target="_blank" rel="noopener noreferrer" className="grid grid-cols-[2rem_1fr] gap-4 border-t border-white/20 py-5 text-sm font-semibold text-white transition-colors hover:text-[#B9D8E9]">
+              <Phone className="h-5 w-5 text-[#8CC9EC]" aria-hidden="true" />
+              <span className="font-numeric">+62 877-7636-0795</span>
+            </a>
+            <a href="mailto:kilaubuild@gmail.com" className="grid grid-cols-[2rem_1fr] gap-4 border-t border-white/20 py-5 text-sm font-semibold text-white transition-colors hover:text-[#B9D8E9]">
+              <Mail className="h-5 w-5 text-[#8CC9EC]" aria-hidden="true" />
+              kilaubuild@gmail.com
+            </a>
+          </address>
+        </div>
+
+        <div className="rounded-2xl bg-white p-6 text-[#0A1E2F] shadow-[0_28px_80px_-42px_rgba(0,0,0,0.8)] sm:p-9 lg:col-span-7">
+          {success ? (
+            <div className="flex min-h-[460px] flex-col items-center justify-center text-center" role="status" aria-live="polite">
+              <span className="flex h-16 w-16 items-center justify-center rounded-full bg-[#EAF3F8] text-[#005592]">
+                <CheckCircle2 className="h-8 w-8" aria-hidden="true" />
+              </span>
+              <h3 className="mt-6 text-2xl font-bold">Pesan sudah terkirim.</h3>
+              <p className="mt-3 max-w-md text-sm leading-6 text-[#526474]">
+                Terima kasih. Tim KilauBuild akan menggunakan detail yang Anda kirim untuk menindaklanjuti kebutuhan proyek.
+              </p>
+              <button type="button" onClick={() => setSuccess(false)} className="button-secondary mt-7">
+                Kirim pesan lain
+              </button>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-serif font-bold text-slate-900 tracking-tight leading-tight">
-              Kunjungi Kantor & Workshop <span className="text-[#005592]">KilauBuild</span>
-            </h2>
-            <p className="text-base text-slate-600 leading-relaxed">
-              Punya pertanyaan seputar estimasi biaya atau ingin berdiskusi langsung dengan tim arsitek kami? Hubungi kami atau kunjungi workshop kami di Depok.
-            </p>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="border-b border-[#CBD8DF] pb-5">
+                <h3 className="text-2xl font-bold">Ceritakan proyek Anda</h3>
+                <p className="mt-2 text-sm leading-6 text-[#526474]">Kolom bertanda wajib diperlukan agar kami dapat menghubungi Anda kembali.</p>
+              </div>
 
-            <div className="space-y-4 pt-2">
-              <div className="flex items-start gap-4 p-5 rounded-2xl bg-white border border-slate-100 shadow-sm">
-                <div className="w-10 h-10 rounded-xl bg-[#EBF4FA] text-[#005592] flex items-center justify-center shrink-0">
-                  <MapPin className="w-5 h-5" />
+              {error && (
+                <div role="alert" className="flex items-start gap-3 rounded-xl bg-red-50 p-4 text-sm text-red-700">
+                  <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />
+                  <span>{error}</span>
+                </div>
+              )}
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label htmlFor="contact-name" className="mb-1.5 block text-sm font-bold">Nama lengkap <span aria-hidden="true">*</span></label>
+                  <input id="contact-name" type="text" autoComplete="name" value={formData.name} onChange={(event) => setFormData({ ...formData, name: event.target.value })} required className="form-field" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-gray-900">Alamat Workshop</h4>
-                  <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                    Jl. Raya Citayam No.34, RT.01/RW.04, Pd. Jaya, Kec. Cipayung, Kota Depok, Jawa Barat 16444
-                  </p>
+                  <label htmlFor="contact-email" className="mb-1.5 block text-sm font-bold">Alamat email <span aria-hidden="true">*</span></label>
+                  <input id="contact-email" type="email" autoComplete="email" value={formData.email} onChange={(event) => setFormData({ ...formData, email: event.target.value })} required className="form-field" />
+                </div>
+                <div>
+                  <label htmlFor="contact-phone" className="mb-1.5 block text-sm font-bold">Nomor WhatsApp</label>
+                  <input id="contact-phone" type="tel" autoComplete="tel" value={formData.phone} onChange={(event) => setFormData({ ...formData, phone: event.target.value })} className="form-field" />
+                </div>
+                <div>
+                  <label htmlFor="contact-subject" className="mb-1.5 block text-sm font-bold">Subjek</label>
+                  <input id="contact-subject" type="text" value={formData.subject} onChange={(event) => setFormData({ ...formData, subject: event.target.value })} className="form-field" />
                 </div>
               </div>
 
-              <div className="flex items-start gap-4 p-5 rounded-2xl bg-white border border-slate-100 shadow-sm">
-                <div className="w-10 h-10 rounded-xl bg-[#EBF4FA] text-[#005592] flex items-center justify-center shrink-0">
-                  <Phone className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-bold text-gray-900">Telepon & WhatsApp</h4>
-                  <p className="text-xs text-slate-600 mt-1">
-                    +62 877-7636-0795 (Respon Cepat)
-                  </p>
-                </div>
+              <div>
+                <label htmlFor="contact-message" className="mb-1.5 block text-sm font-bold">Kebutuhan proyek <span aria-hidden="true">*</span></label>
+                <textarea id="contact-message" rows={5} value={formData.message} onChange={(event) => setFormData({ ...formData, message: event.target.value })} required className="form-field min-h-36 resize-y" />
               </div>
 
-              <div className="flex items-start gap-4 p-5 rounded-2xl bg-white border border-slate-100 shadow-sm">
-                <div className="w-10 h-10 rounded-xl bg-[#EBF4FA] text-[#005592] flex items-center justify-center shrink-0">
-                  <Mail className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-bold text-gray-900">Email Resmi</h4>
-                  <p className="text-xs text-slate-600 mt-1">
-                    kilaubuild@gmail.com
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column: Contact Form */}
-          <div className="lg:col-span-7 bg-white rounded-[32px] p-6 sm:p-10 border border-slate-200/80 shadow-lg shadow-slate-900/5">
-            <h3 className="text-xl font-bold text-gray-900 mb-2">
-              Kirimkan Pesan atau Pertanyaan
-            </h3>
-            <p className="text-xs text-gray-500 mb-6">
-              Tim customer support kami akan membalas pesan Anda dalam kurun waktu 1x24 jam kerja.
-            </p>
-
-            {success ? (
-              <div className="p-6 rounded-2xl bg-[#EBF4FA] text-center space-y-3">
-                <CheckCircle2 className="w-10 h-10 text-[#005592] mx-auto" />
-                <h4 className="text-lg font-bold text-[#005592]">Pesan Anda Berhasil Terkirim!</h4>
-                <p className="text-xs text-gray-600 max-w-sm mx-auto">
-                  Terima kasih telah menghubungi KilauBuild. Tim kami akan segera menindaklanjuti pesan Anda.
-                </p>
-                <button
-                  onClick={() => setSuccess(false)}
-                  className="mt-2 text-xs font-semibold text-[#005592] underline"
-                >
-                  Kirim Pesan Lain
-                </button>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-4">
-                {error && (
-                  <div className="p-3.5 rounded-xl bg-red-50 text-red-700 text-xs flex items-center gap-2">
-                    <AlertCircle className="w-4 h-4 shrink-0" />
-                    <span>{error}</span>
-                  </div>
-                )}
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">
-                      Nama Lengkap *
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Hendra"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      required
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#005592]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">
-                      Email Aktif *
-                    </label>
-                    <input
-                      type="email"
-                      placeholder="e.g. hendra@gmail.com"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      required
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#005592]"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">
-                      Nomor Telepon / WhatsApp
-                    </label>
-                    <input
-                      type="tel"
-                      placeholder="e.g. 081234567890"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#005592]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">
-                      Subjek
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Pertanyaan Renovasi Ruko"
-                      value={formData.subject}
-                      onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#005592]"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">
-                    Isi Pesan *
-                  </label>
-                  <textarea
-                    rows={4}
-                    placeholder="Tuliskan pertanyaan atau kebutuhan renovasi Anda di sini..."
-                    value={formData.message}
-                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    required
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#005592]"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full flex items-center justify-center gap-2 bg-[#005592] hover:bg-[#0066AE] disabled:bg-gray-400 text-white font-semibold text-sm py-3 rounded-xl shadow transition-all duration-200"
-                >
-                  <Send className="w-4 h-4" />
-                  <span>{loading ? "Mengirimkan Pesan..." : "Kirim Pesan Sekarang"}</span>
-                </button>
-              </form>
-            )}
-          </div>
+              <button type="submit" disabled={loading} className="button-primary w-full disabled:bg-[#80909A]">
+                <Send className="h-4 w-4" aria-hidden="true" />
+                {loading ? "Mengirim pesan..." : "Kirim pesan"}
+              </button>
+            </form>
+          )}
         </div>
       </div>
     </section>

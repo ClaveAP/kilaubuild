@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Inter, Playfair_Display } from "next/font/google";
+import { Plus_Jakarta_Sans, Inter, Noto_Serif, JetBrains_Mono } from "next/font/google";
 import "react-day-picker/style.css";
 import "./globals.css";
 
@@ -10,13 +10,6 @@ const headingFont = Plus_Jakarta_Sans({
   display: "swap",
 });
 
-const serifFont = Playfair_Display({
-  subsets: ["latin"],
-  variable: "--font-serif",
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
-
 const sansFont = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
@@ -24,10 +17,23 @@ const sansFont = Inter({
   display: "swap",
 });
 
+const editorialFont = Noto_Serif({
+  subsets: ["latin"],
+  variable: "--font-editorial",
+  weight: ["400", "500", "600"],
+  display: "swap",
+});
+
+const numericFont = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-numeric",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "KilauBuild — Jasa Kontraktor & Desain Interior | Bangun Dulu Baru Bayar",
   description:
-    "KilauBuild adalah mitra konstruksi terpercaya di Jabodetabek. Bangun rumah dari nol, renovasi total, dan desain interior dengan sistem garansi dan bayar termin sesuai progres fisik nyata.",
+    "KilauBuild melayani pembangunan rumah, renovasi, dan interior di Depok serta Jabodetabek. Survey awal gratis dan termin mengikuti progres fisik di lokasi.",
   icons: {
     icon: "/logo-kilau-build.jpg",
   },
@@ -39,8 +45,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id" className={`${headingFont.variable} ${serifFont.variable} ${sansFont.variable} scroll-smooth`}>
-      <body className="font-sans antialiased text-slate-900 bg-[#F8FAFC] selection:bg-[#005592] selection:text-white">
+    <html lang="id" className={`${headingFont.variable} ${sansFont.variable} ${editorialFont.variable} ${numericFont.variable} scroll-smooth`}>
+      <body className="bg-[#F4F7F8] font-sans text-[#0A1E2F] antialiased">
+        <a href="#main-content" className="skip-link">
+          Lewati ke konten utama
+        </a>
         {children}
       </body>
     </html>

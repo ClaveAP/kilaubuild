@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { Activity, ArrowUpRight, Layers3, MapPin, X } from "lucide-react";
 import { getApiData, resolveMediaUrl } from "@/lib/api";
-import { ArrowUpRight, MapPin, X, Layers, Activity } from "lucide-react";
 import {
   fallbackDoneProjects,
   fallbackOngoingProjects,
@@ -17,31 +17,34 @@ const getFirstAvailable = async <T,>(endpoints: string[]): Promise<T> => {
   for (const endpoint of endpoints) {
     try {
       return await getApiData<T>(endpoint);
-    } catch (err: unknown) {
-      lastError = err;
+    } catch (error: unknown) {
+      lastError = error;
     }
   }
 
   throw lastError;
 };
 
-export const PortfolioSection: React.FC = () => {
+export const PortfolioSection = () => {
   const [activeTab, setActiveTab] = useState<"done" | "ongoing">("done");
   const [doneProjects, setDoneProjects] = useState<ProjectDone[]>(fallbackDoneProjects);
   const [ongoingProjects, setOngoingProjects] = useState<OngoingProject[]>(fallbackOngoingProjects);
   const [selectedProject, setSelectedProject] = useState<ProjectDone | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const [doneRes, ongoingRes] = await Promise.all([
+        const [doneResponse, ongoingResponse] = await Promise.all([
           getFirstAvailable<ProjectDone[]>(["/project-dones", "/projects/done"]),
           getFirstAvailable<OngoingProject[]>(["/ongoing-projects", "/projects/ongoing"]),
         ]);
-        if (doneRes.length > 0) setDoneProjects(doneRes);
-        if (ongoingRes.length > 0) setOngoingProjects(ongoingRes);
-      } catch (err: unknown) {
-        console.warn("Gagal memuat portofolio backend, menggunakan foto lokal:", err);
+
+        if (doneResponse.length > 0) setDoneProjects(doneResponse);
+        if (ongoingResponse.length > 0) setOngoingProjects(ongoingResponse);
+      } catch (error: unknown) {
+        console.warn("Gagal memuat portofolio backend, menggunakan foto lokal:", error);
       }
     };
 
@@ -58,234 +61,214 @@ export const PortfolioSection: React.FC = () => {
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     window.addEventListener("keydown", handleKeyDown);
+    window.requestAnimationFrame(() => closeButtonRef.current?.focus());
 
     return () => {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", handleKeyDown);
+      triggerRef.current?.focus();
     };
   }, [selectedProject]);
 
   return (
-    <section id="portofolio" className="py-20 bg-transparent">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="max-w-3xl mx-auto text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EBF4FA] text-[#005592] text-xs font-semibold uppercase tracking-wider mb-4 border border-[#66B2E0]/30">
-            Portofolio Terverifikasi
-          </div>
-          <h2 className="text-3xl sm:text-4xl font-serif font-bold text-slate-900 tracking-tight mb-4">
-            Portofolio & Bukti Pengerjaan <span className="text-[#005592]">Nyata</span>
-          </h2>
-          <p className="text-base text-slate-600 leading-relaxed">
-            Integritas KilauBuild dibuktikan melalui dokumentasi transparan dari proyek yang telah selesai maupun yang sedang berlangsung di lapangan.
-          </p>
-
-          {/* Capsule Tab Selector (Like Header & Navbar) */}
-          <div className="inline-flex p-1.5 bg-slate-200/60 backdrop-blur-sm rounded-full mt-8 border border-slate-300/50">
-            <button
-              onClick={() => setActiveTab("done")}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all ${
-                activeTab === "done"
-                  ? "bg-[#005592] text-white shadow-sm"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-white/50"
-              }`}
-            >
-              <Layers className="w-4 h-4" />
-              <span>Proyek Selesai ({doneProjects.length})</span>
-            </button>
-            <button
-              onClick={() => setActiveTab("ongoing")}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all ${
-                activeTab === "ongoing"
-                  ? "bg-[#005592] text-white shadow-sm"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-white/50"
-              }`}
-            >
-              <Activity className="w-4 h-4" />
-              <span>Proyek Berjalan ({ongoingProjects.length})</span>
-            </button>
+    <section id="portofolio" className="bg-[#071A2B] py-20 text-white sm:py-28">
+      <div className="site-shell">
+        <div className="grid gap-9 border-b border-white/20 pb-10 lg:grid-cols-12 lg:items-end">
+          <h2 className="section-heading text-white lg:col-span-7">Lihat hasilnya. Ikuti prosesnya.</h2>
+          <div className="lg:col-span-5">
+            <p className="max-w-xl text-base leading-7 text-[#C8DCE8]">
+              Galeri ini memuat proyek selesai dan progres yang sedang berjalan. Buka tiap proyek untuk melihat dokumentasinya.
+            </p>
+            <div className="mt-7 inline-grid grid-cols-2 rounded-xl border border-white/25 p-1" role="group" aria-label="Jenis portofolio">
+              <button
+                type="button"
+                onClick={() => setActiveTab("done")}
+                aria-pressed={activeTab === "done"}
+                className={`flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 text-sm font-bold transition-colors ${
+                  activeTab === "done" ? "bg-white text-[#004475]" : "text-white hover:bg-white/10"
+                }`}
+              >
+                <Layers3 className="h-4 w-4" aria-hidden="true" />
+                Selesai (<span className="font-numeric">{doneProjects.length}</span>)
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("ongoing")}
+                aria-pressed={activeTab === "ongoing"}
+                className={`flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 text-sm font-bold transition-colors ${
+                  activeTab === "ongoing" ? "bg-white text-[#004475]" : "text-white hover:bg-white/10"
+                }`}
+              >
+                <Activity className="h-4 w-4" aria-hidden="true" />
+                Berjalan (<span className="font-numeric">{ongoingProjects.length}</span>)
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Tab 1: Proyek Selesai */}
-        {activeTab === "done" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {doneProjects.map((project) => (
-              <button
-                type="button"
-                key={project.id}
-                onClick={() => setSelectedProject(project)}
-                className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white text-left shadow-xs transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
-                aria-label={`Buka galeri ${project.title}`}
-              >
-                <div className="relative h-64 w-full bg-slate-100 overflow-hidden">
+        {activeTab === "done" ? (
+          <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-12">
+            {doneProjects.map((project, index) => {
+              const featured = index === 0;
+
+              return (
+                <button
+                  type="button"
+                  key={project.id}
+                  onClick={(event) => {
+                    triggerRef.current = event.currentTarget;
+                    setSelectedProject(project);
+                  }}
+                  className={`group relative min-h-[390px] overflow-hidden rounded-2xl bg-[#173247] text-left md:min-h-[470px] ${
+                    featured ? "md:col-span-2 lg:col-span-7 lg:min-h-[610px]" : "lg:col-span-5"
+                  }`}
+                  aria-label={`Buka galeri ${project.title}`}
+                >
                   <Image
                     src={resolveMediaUrl(project.coverImage, "/header.png")}
-                    alt={project.title}
+                    alt=""
                     fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    sizes={featured ? "(max-width: 1024px) 100vw, 58vw" : "(max-width: 1024px) 50vw, 42vw"}
+                    className="object-cover transition-transform duration-500 group-hover:scale-[1.025]"
                   />
-                  <div className="absolute top-4 left-4 bg-slate-900/80 backdrop-blur-md text-white text-xs font-medium px-3.5 py-1.5 rounded-full shadow">
-                    {project.category}
-                  </div>
-                </div>
-
-                <div className="p-7 flex-1 flex flex-col justify-between">
-                  <div>
-                    <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-[#005592] transition-colors">
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#071A2B]/95 via-[#071A2B]/12 to-transparent" />
+                  <div className="absolute inset-x-0 bottom-0 p-6 sm:p-8">
+                    <div className="mb-3 flex items-center justify-between gap-4 text-xs font-semibold text-[#B9D8E9]">
+                      <span>{project.category}</span>
+                      <span>{project.budgetRange || "RAB sesuai lingkup"}</span>
+                    </div>
+                    <h3 className={`font-bold leading-tight text-white ${featured ? "text-3xl sm:text-4xl" : "text-2xl"}`}>
                       {project.title}
                     </h3>
-                    <p className="text-sm text-slate-600 line-clamp-2 mb-4 leading-relaxed">
-                      {project.description}
-                    </p>
-                  </div>
-
-                  <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                    <span className="font-semibold text-[#005592]">
-                      {project.budgetRange || "Estimasi Fleksibel"}
-                    </span>
-                    <span className="inline-flex items-center gap-1.5 text-slate-900 group-hover:text-[#005592] font-semibold transition-colors">
-                      <span>Lihat Galeri</span>
-                      <span className="w-6 h-6 rounded-full bg-[#005592] text-white flex items-center justify-center text-xs group-hover:scale-105 transition-transform">
-                        <ArrowUpRight className="w-3.5 h-3.5" />
-                      </span>
+                    <p className="mt-3 max-w-xl text-sm leading-6 text-white/78">{project.description}</p>
+                    <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-white">
+                      Buka dokumentasi
+                      <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden="true" />
                     </span>
                   </div>
-                </div>
-              </button>
-            ))}
+                </button>
+              );
+            })}
           </div>
-        )}
-
-        {/* Tab 2: Proyek Berjalan (Ongoing) */}
-        {activeTab === "ongoing" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {ongoingProjects.map((project) => (
-              <div
+        ) : (
+          <div className="mt-10 border-y border-white/20">
+            {ongoingProjects.map((project, index) => (
+              <article
                 key={project.id}
-                className="bg-white rounded-[28px] overflow-hidden border border-slate-200/80 shadow-xs hover:shadow-lg transition-all p-7 flex flex-col justify-between"
+                className={`grid gap-6 py-7 sm:grid-cols-[14rem_1fr] sm:items-center lg:grid-cols-[19rem_1fr_auto] ${
+                  index > 0 ? "border-t border-white/20" : ""
+                }`}
               >
+                <div className="relative min-h-48 overflow-hidden rounded-xl bg-[#173247] sm:min-h-40">
+                  <Image
+                    src={resolveMediaUrl(project.imageUrl, "/on going project.png")}
+                    alt={project.title}
+                    fill
+                    sizes="(max-width: 640px) 100vw, 304px"
+                    className="object-cover"
+                  />
+                </div>
                 <div>
-                  <div className="relative h-48 w-full bg-slate-100 rounded-2xl overflow-hidden mb-5">
-                    <Image
-                      src={resolveMediaUrl(project.imageUrl, "/on going project.png")}
-                      alt={project.title}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      className="object-cover"
-                    />
-                    <div className="absolute bottom-3 right-3 bg-black/75 text-white text-xs px-2.5 py-1 rounded-md flex items-center gap-1.5 backdrop-blur-sm">
-                      <MapPin className="w-3.5 h-3.5 text-[#66B2E0]" />
-                      <span>{project.location}</span>
-                    </div>
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-semibold text-[#B9D8E9]">
+                    <span className="inline-flex items-center gap-1.5">
+                      <MapPin className="h-3.5 w-3.5" aria-hidden="true" />
+                      {project.location}
+                    </span>
+                    <span>Proyek berjalan</span>
                   </div>
-
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">
-                    {project.title}
-                  </h3>
-                  <p className="text-sm text-gray-600 mb-6 leading-relaxed">
-                    {project.description || "Pengerjaan fisik berjalan sesuai jadwal termin."}
+                  <h3 className="mt-3 text-2xl font-bold text-white">{project.title}</h3>
+                  <p className="mt-3 max-w-2xl text-sm leading-6 text-[#C8DCE8]">
+                    {project.description || "Pengerjaan fisik berjalan sesuai tahap yang disepakati."}
                   </p>
                 </div>
-
-                {/* Progress Bar */}
-                <div className="pt-4 border-t border-gray-100">
-                  <div className="flex items-center justify-between text-xs font-semibold mb-2">
-                    <span className="text-gray-700">Progres Konstruksi</span>
-                    <span className="text-[#005592] font-bold">{project.progressPercentage}% Selesai</span>
+                {project.id.startsWith("fallback-") ? (
+                  <div className="min-w-48 border-l border-white/20 pl-5">
+                    <span className="text-xs font-semibold text-[#B9D8E9]">Status dokumentasi</span>
+                    <p className="mt-2 text-lg font-bold text-white">Tahap aktif</p>
                   </div>
-                  <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-[#005592] to-[#66B2E0] rounded-full transition-all duration-500"
-                      style={{ width: `${project.progressPercentage}%` }}
-                    />
+                ) : (
+                  <div className="min-w-48">
+                    <div className="flex items-end justify-between gap-4">
+                      <span className="text-xs font-semibold text-[#B9D8E9]">Progres fisik</span>
+                      <strong className="font-numeric text-3xl font-bold text-white">{project.progressPercentage}%</strong>
+                    </div>
+                    <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/15" aria-hidden="true">
+                      <div className="h-full rounded-full bg-[#66B2E0]" style={{ width: `${project.progressPercentage}%` }} />
+                    </div>
                   </div>
-                </div>
-              </div>
+                )}
+              </article>
             ))}
           </div>
         )}
+      </div>
 
-        {/* Modal Galeri Foto Proyek Selesai */}
-        {selectedProject && (
+      {selectedProject && (
+        <div
+          className="fixed inset-0 z-[70] flex items-center justify-center bg-[#03101A]/88 p-3 backdrop-blur-sm sm:p-6"
+          onMouseDown={(event) => {
+            if (event.currentTarget === event.target) setSelectedProject(null);
+          }}
+        >
           <div
-            className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
-            onMouseDown={(event) => {
-              if (event.currentTarget === event.target) setSelectedProject(null);
-            }}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="project-gallery-title"
+            className="max-h-[92vh] w-full max-w-5xl overflow-y-auto rounded-2xl bg-white p-5 text-[#0A1E2F] shadow-[0_30px_90px_rgba(0,0,0,0.4)] sm:p-8"
           >
-            <div
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="project-gallery-title"
-              className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl sm:p-8"
-            >
-              <div className="flex items-start justify-between mb-6">
-                <div>
-                  <span className="text-xs font-bold text-[#005592] uppercase tracking-wider">
-                    {selectedProject.category}
-                  </span>
-                  <h3 id="project-gallery-title" className="mt-1 text-2xl font-bold text-gray-900">
-                    {selectedProject.title}
-                  </h3>
-                </div>
-                <button
-                  onClick={() => setSelectedProject(null)}
-                  className="p-2 text-gray-400 hover:text-gray-700 rounded-lg hover:bg-gray-100"
-                  aria-label="Tutup Galeri"
-                >
-                  <X className="w-6 h-6" />
-                </button>
+            <div className="flex items-start justify-between gap-6 border-b border-[#CBD8DF] pb-5">
+              <div>
+                <p className="text-sm font-bold text-[#005592]">{selectedProject.category}</p>
+                <h3 id="project-gallery-title" className="mt-2 text-2xl font-bold sm:text-3xl">
+                  {selectedProject.title}
+                </h3>
               </div>
+              <button
+                ref={closeButtonRef}
+                type="button"
+                onClick={() => setSelectedProject(null)}
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#EAF3F8] text-[#004475] transition-colors hover:bg-[#DCECF5]"
+                aria-label="Tutup galeri"
+              >
+                <X className="h-5 w-5" aria-hidden="true" />
+              </button>
+            </div>
 
-              <p className="text-sm text-gray-600 mb-6 leading-relaxed">
-                {selectedProject.description}
-              </p>
+            {selectedProject.description && (
+              <p className="mt-5 max-w-3xl text-sm leading-7 text-[#526474]">{selectedProject.description}</p>
+            )}
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {selectedProject.gallery && selectedProject.gallery.length > 0 ? (
-                  selectedProject.gallery.map((img) => (
-                    <div key={img.id} className="relative h-64 rounded-xl overflow-hidden bg-gray-100">
+            <div className="mt-6 grid gap-4 sm:grid-cols-2">
+              {selectedProject.gallery && selectedProject.gallery.length > 0 ? (
+                selectedProject.gallery.map((image) => (
+                  <figure key={image.id} className="overflow-hidden rounded-xl border border-[#CBD8DF] bg-[#EAF3F8]">
+                    <div className="relative min-h-64">
                       <Image
-                        src={resolveMediaUrl(img.imageUrl, selectedProject.coverImage || "/header.png")}
-                        alt={img.caption || selectedProject.title}
+                        src={resolveMediaUrl(image.imageUrl, selectedProject.coverImage || "/header.png")}
+                        alt={image.caption || selectedProject.title}
                         fill
                         sizes="(max-width: 640px) 100vw, 50vw"
                         className="object-cover"
                       />
-                      {img.caption && (
-                        <div className="absolute bottom-0 inset-x-0 bg-black/60 text-white text-xs p-2.5 backdrop-blur-sm">
-                          {img.caption}
-                        </div>
-                      )}
                     </div>
-                  ))
-                ) : (
-                  <div className="relative h-64 sm:col-span-2 rounded-xl overflow-hidden bg-gray-100">
-                    <Image
-                      src={resolveMediaUrl(selectedProject.coverImage, "/header.png")}
-                      alt={selectedProject.title}
-                      fill
-                      sizes="(max-width: 896px) 100vw, 896px"
-                      className="object-cover"
-                    />
-                  </div>
-                )}
-              </div>
-
-              <div className="mt-8 pt-4 border-t border-gray-100 flex justify-end">
-                <button
-                  onClick={() => setSelectedProject(null)}
-                  className="bg-[#005592] text-white px-6 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#0066AE] transition-colors"
-                >
-                  Tutup Galeri
-                </button>
-              </div>
+                    {image.caption && <figcaption className="px-4 py-3 text-xs text-[#526474]">{image.caption}</figcaption>}
+                  </figure>
+                ))
+              ) : (
+                <div className="relative min-h-80 overflow-hidden rounded-xl bg-[#EAF3F8] sm:col-span-2">
+                  <Image
+                    src={resolveMediaUrl(selectedProject.coverImage, "/header.png")}
+                    alt={selectedProject.title}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 960px"
+                    className="object-cover"
+                  />
+                </div>
+              )}
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </section>
   );
 };

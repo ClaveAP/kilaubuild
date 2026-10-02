@@ -1,275 +1,89 @@
-"use client";
-
-import React, { useState } from "react";
 import Image from "next/image";
-import { postApiData } from "@/lib/api";
-import { ArrowUpRight, Star, CheckCircle2, AlertCircle, Phone } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 
-interface BookingSuccessResponse {
-  booking: { clientName: string };
-  whatsappUrl: string;
-}
+const process = [
+  { number: "01", title: "Rencana", detail: "Kebutuhan dan biaya disusun." },
+  { number: "02", title: "Bangun", detail: "Pekerjaan berjalan bertahap." },
+  { number: "03", title: "Periksa", detail: "Progres fisik Anda lihat." },
+  { number: "04", title: "Bayar", detail: "Termin mengikuti progres." },
+];
 
-export const HeroSection: React.FC = () => {
-  const [formData, setFormData] = useState({
-    clientName: "",
-    phone: "",
-    email: "",
-    serviceType: "Bangun Rumah Baru",
-    location: "",
-    notes: "",
-  });
-
-  const [submitting, setSubmitting] = useState(false);
-  const [successUrl, setSuccessUrl] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleQuickBooking = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setSubmitting(true);
-
-    try {
-      const nextBusinessDay = new Date();
-      nextBusinessDay.setDate(nextBusinessDay.getDate() + 1);
-      while (nextBusinessDay.getDay() === 0 || nextBusinessDay.getDay() === 6) {
-        nextBusinessDay.setDate(nextBusinessDay.getDate() + 1);
-      }
-      const dateStr = nextBusinessDay.toISOString().split("T")[0];
-
-      const payload = {
-        ...formData,
-        bookingDate: dateStr,
-        timeSlot: "09:00",
-      };
-
-      const response = await postApiData<BookingSuccessResponse, typeof payload>(
-        "/bookings",
-        payload,
-      );
-
-      setSuccessUrl(response.whatsappUrl);
-    } catch (err: unknown) {
-      interface ErrorResponse {
-        response?: { data?: { message?: string | string[] } };
-        message?: string;
-      }
-      const apiErr = err as ErrorResponse;
-      const msg =
-        apiErr?.response?.data?.message ||
-        apiErr?.message ||
-        "Gagal memproses booking. Coba lagi atau hubungi via WhatsApp.";
-      setError(Array.isArray(msg) ? msg.join(", ") : msg);
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
+export const HeroSection = () => {
   return (
-    <section id="hero" className="w-full scroll-mt-24 pb-10 pt-[88px] sm:pt-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Main Framed Hero Card Container (Like RooFix Reference) */}
-        <div className="relative flex min-h-[580px] flex-col justify-between overflow-hidden rounded-2xl p-6 shadow-[0_28px_80px_-42px_rgba(15,23,42,0.75)] sm:min-h-[600px] sm:p-10 lg:min-h-[620px] lg:p-14">
-          {/* Background Construction Image with Moody Vignette */}
-          <div className="absolute inset-0 z-0">
-            <Image
-              src="/bangun dari 0.png"
-              alt="KilauBuild Pekerjaan Konstruksi & Atap"
-              fill
-              sizes="(max-width: 1280px) 100vw, 1280px"
-              priority
-              className="object-cover object-center scale-105"
-            />
-            {/* Cinematic Gradient Overlays: Deep blue-black vignette on left, clear sight on right */}
-            <div className="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-slate-950/60 to-slate-950/30" />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-black/20" />
+    <section id="hero" className="relative overflow-hidden bg-[#F8FBFD] pt-[72px] lg:pt-0">
+      <div className="pointer-events-none absolute right-0 top-0 h-[76%] w-[55%] bg-[#EBF4FA]" aria-hidden="true" />
+      <div className="relative mx-auto flex min-h-[calc(100svh-72px)] max-w-[1440px] flex-col px-5 pb-3 pt-6 sm:px-8 sm:pb-6 sm:pt-12 lg:min-h-[100svh] lg:px-10 lg:pb-0 lg:pt-0 xl:px-16">
+        <div className="grid flex-1 items-center gap-3 sm:gap-6 lg:min-h-0 lg:grid-cols-[0.96fr_1.04fr]">
+          <div className="relative z-10 py-2 lg:py-8">
+            <p className="mb-5 flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.19em] text-[#005592] sm:mb-7">
+              <span className="h-px w-8 bg-[#005592]" aria-hidden="true" />
+              Bangun rumah, lebih tenang
+            </p>
+            <h1 className="hero-editorial-title text-[clamp(2.55rem,4.2vw,4.75rem)] leading-[1.12] tracking-[-0.035em] text-[#092436]">
+              <span className="block">Rumah bagus.</span>
+              <span className="block">Proses <em className="font-normal not-italic text-[#005592]">jelas.</em></span>
+            </h1>
+            <p className="mt-5 max-w-[32rem] text-base leading-7 text-[#526474] sm:mt-6 sm:text-lg sm:leading-8">
+              Bangun, renovasi, dan interior dengan progres yang bisa Anda cek sebelum membayar termin berikutnya.
+            </p>
+            <div className="mt-5 flex flex-col gap-3 sm:mt-7 sm:flex-row">
+              <a href="#booking" className="button-primary w-full rounded-none px-6 sm:w-auto">
+                Diskusikan proyek Anda
+                <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+              </a>
+              <a href="#portofolio" className="button-secondary w-full rounded-none px-6 sm:w-auto">
+                Lihat hasil kerja
+                <ArrowDownRight className="h-4 w-4" aria-hidden="true" />
+              </a>
+            </div>
+            <p className="mt-4 text-xs font-medium tracking-[0.03em] text-[#668091] sm:mt-6">
+              Survey awal gratis · Depok &amp; Jabodetabek
+            </p>
           </div>
 
-          {/* Top content area inside card */}
-          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center flex-1">
-            {/* Left Content Column */}
-            <div className="lg:col-span-7 text-white space-y-6 pt-4">
-              <h1 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-normal text-white leading-[1.08] tracking-tight">
-                Bangun Dulu, <br />
-                <span className="italic font-serif text-white/95">Baru Bayar.</span>
-              </h1>
-
-              <p className="text-sm sm:text-base lg:text-lg text-slate-200/90 max-w-lg font-light leading-relaxed">
-                Jasa kontraktor bangun rumah baru dari 0, renovasi total, dan desain interior bergaransi resmi di Jabodetabek. Pembayaran termin aman berbasis verifikasi progres fisik nyata.
-              </p>
-
-              {/* Bottom Actions on Left Column (RooFix Style) */}
-              <div className="pt-4 flex flex-wrap items-center gap-5">
-                {/* Pill Button with Brand Blue Arrow */}
-                <a
-                  href="https://wa.me/6287776360795"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group inline-flex items-center gap-3 bg-white text-slate-900 font-semibold text-xs sm:text-sm pl-5 pr-2 py-2 rounded-full shadow-xl hover:bg-slate-100 transition-all duration-200"
-                >
-                  <span>Hubungi Kami</span>
-                  <div className="w-7 h-7 rounded-full bg-[#005592] group-hover:scale-105 flex items-center justify-center text-white transition-transform">
-                    <ArrowUpRight className="w-4 h-4" />
-                  </div>
-                </a>
-
-                {/* Social Proof Star Rating + Avatars (Like RooFix) */}
-                <div className="flex items-center gap-3 bg-slate-950/40 backdrop-blur-md px-4 py-2 rounded-full border border-white/10">
-                  {/* Overlapping Avatar Stack */}
-                  <div className="flex -space-x-2 overflow-hidden">
-                    <div className="w-7 h-7 rounded-full bg-[#005592] border-2 border-slate-900 overflow-hidden relative">
-                      <Image src="/owner.jpeg" alt="Client 1" fill sizes="28px" className="object-cover" />
-                    </div>
-                    <div className="w-7 h-7 rounded-full bg-slate-700 border-2 border-slate-900 flex items-center justify-center text-[10px] font-bold text-white">
-                      KB
-                    </div>
-                    <div className="w-7 h-7 rounded-full bg-amber-500 border-2 border-slate-900 flex items-center justify-center text-[10px] font-bold text-white">
-                      ★
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col">
-                    <div className="flex items-center gap-1 text-amber-400">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <Star key={i} className="w-3 h-3 fill-amber-400 text-amber-400" />
-                      ))}
-                      <span className="text-xs font-bold text-white ml-1">5.0</span>
-                    </div>
-                    <span className="text-[10px] text-slate-300 font-medium">150+ Proyek Selesai</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Column: Lead Capture Card (Like RooFix Right Form) */}
-            <div className="lg:col-span-5 flex justify-center lg:justify-end">
-              <div className="bg-white rounded-3xl p-6 sm:p-7 shadow-2xl max-w-md w-full text-slate-900 border border-slate-100">
-                <div className="text-center mb-5">
-                  <h3 className="text-xl font-bold text-slate-900 tracking-tight">
-                    Survey & RAB Gratis!
-                  </h3>
-                  <p className="text-xs text-slate-500 mt-1">
-                    Estimasi biaya transparan tanpa komitmen paksaan.
-                  </p>
-                </div>
-
-                {successUrl ? (
-                  <div className="text-center py-6 space-y-4">
-                    <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto">
-                      <CheckCircle2 className="w-7 h-7" />
-                    </div>
-                    <h4 className="font-bold text-slate-900 text-base">
-                      Permintaan Diterima!
-                    </h4>
-                    <p className="text-xs text-slate-600 leading-relaxed">
-                      Klik tombol di bawah untuk langsung terhubung dengan WhatsApp Estimator kami:
-                    </p>
-                    <a
-                      href={successUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center gap-2 w-full bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-semibold py-3 rounded-2xl shadow transition-all"
-                    >
-                      <Phone className="w-4 h-4" />
-                      <span>Chat WhatsApp Sekarang</span>
-                    </a>
-                  </div>
-                ) : (
-                  <form onSubmit={handleQuickBooking} className="space-y-3">
-                    {error && (
-                      <div className="p-2.5 rounded-xl bg-red-50 text-red-700 text-xs flex items-center gap-2">
-                        <AlertCircle className="w-4 h-4 shrink-0" />
-                        <span>{error}</span>
-                      </div>
-                    )}
-
-                    <div>
-                      <input
-                        type="text"
-                        placeholder="Nama Lengkap Anda"
-                        value={formData.clientName}
-                        onChange={(e) =>
-                          setFormData({ ...formData, clientName: e.target.value })
-                        }
-                        required
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#005592] bg-slate-50/50"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2.5">
-                      <input
-                        type="tel"
-                        placeholder="No. WhatsApp"
-                        value={formData.phone}
-                        onChange={(e) =>
-                          setFormData({ ...formData, phone: e.target.value })
-                        }
-                        required
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#005592] bg-slate-50/50"
-                      />
-                      <input
-                        type="email"
-                        placeholder="Alamat Email"
-                        value={formData.email}
-                        onChange={(e) =>
-                          setFormData({ ...formData, email: e.target.value })
-                        }
-                        required
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#005592] bg-slate-50/50"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2.5">
-                      <select
-                        value={formData.serviceType}
-                        onChange={(e) =>
-                          setFormData({ ...formData, serviceType: e.target.value })
-                        }
-                        className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#005592] bg-slate-50/50"
-                      >
-                        <option value="Bangun Rumah Baru">Bangun Rumah</option>
-                        <option value="Renovasi Total">Renovasi</option>
-                        <option value="Desain Interior">Interior & Mebel</option>
-                        <option value="Gambar Kerja & RAB">Gambar & RAB</option>
-                      </select>
-
-                      <input
-                        type="text"
-                        placeholder="Lokasi (e.g. Depok)"
-                        value={formData.location}
-                        onChange={(e) =>
-                          setFormData({ ...formData, location: e.target.value })
-                        }
-                        required
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#005592] bg-slate-50/50"
-                      />
-                    </div>
-
-                    <div>
-                      <textarea
-                        rows={2}
-                        placeholder="Catatan proyek (opsional)..."
-                        value={formData.notes}
-                        onChange={(e) =>
-                          setFormData({ ...formData, notes: e.target.value })
-                        }
-                        className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#005592] bg-slate-50/50"
-                      />
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={submitting}
-                      className="w-full bg-[#005592] hover:bg-[#0066AE] text-white font-bold py-3.5 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 text-xs sm:text-sm flex items-center justify-center gap-2 mt-2 cursor-pointer"
-                    >
-                      <span>{submitting ? "Memproses..." : "Dapatkan Survey Gratis Sekarang"}</span>
-                    </button>
-                  </form>
-                )}
-              </div>
-            </div>
+          <div className="relative h-[260px] sm:h-[480px] lg:h-[60svh] lg:min-h-[390px] lg:max-h-[670px]" aria-label="Dokumentasi proyek KilauBuild">
+            <figure className="absolute right-0 top-0 h-[58%] w-[79%] border-[8px] border-[#F8FBFD] bg-[#D6E5EC] shadow-[0_24px_60px_-35px_rgba(0,68,117,0.38)] sm:right-[2%] sm:top-[5%] lg:top-[11%]">
+              <Image
+                src="/uploads/project_done/8cX7nIp1q47nOZhJKkMLIqGfGbZUyP3u28l88kTN.png"
+                alt="Fasad rumah modern dengan taman, salah satu proyek selesai KilauBuild"
+                fill
+                sizes="(max-width: 640px) 75vw, (max-width: 1024px) 55vw, 36vw"
+                priority
+                className="object-cover"
+              />
+              <figcaption className="absolute bottom-0 left-0 hidden bg-white/95 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#004475] sm:block sm:px-4 sm:py-3">
+                <span className="font-numeric">01</span> / Proyek selesai
+              </figcaption>
+            </figure>
+            <figure className="absolute bottom-[3%] left-0 h-[48%] w-[63%] border-[8px] border-[#F8FBFD] bg-[#C8DEE9] shadow-[0_24px_60px_-35px_rgba(0,68,117,0.42)] sm:bottom-[5%] lg:bottom-[9%] lg:left-[2%]">
+              <Image
+                src="/bangun dari 0.png"
+                alt="Dokumentasi pekerjaan konstruksi di lokasi proyek KilauBuild"
+                fill
+                sizes="(max-width: 640px) 60vw, (max-width: 1024px) 45vw, 30vw"
+                className="object-cover object-center"
+              />
+              <figcaption className="absolute bottom-0 left-0 bg-white/95 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#004475] sm:px-4 sm:py-3">
+                <span className="font-numeric">02</span> / Proses lapangan
+              </figcaption>
+            </figure>
+            <span className="absolute bottom-[16%] right-[2%] hidden text-[10px] font-bold uppercase tracking-[0.2em] text-[#005592] sm:block [writing-mode:vertical-rl]">
+              KilauBuild · <span className="font-numeric">2026</span>
+            </span>
           </div>
         </div>
+
+        <ol className="grid grid-cols-2 border-t border-[#C7DCE7] lg:grid-cols-4">
+          {process.map((step, index) => (
+            <li key={step.number} className={`flex gap-2 border-[#D7E4EB] py-3 sm:gap-4 sm:py-4 lg:py-5 ${index % 2 === 1 ? "border-l pl-3 sm:pl-6" : ""} ${index > 1 ? "border-t lg:border-t-0" : ""} ${index > 0 ? "lg:border-l lg:pl-6" : ""}`}>
+              <span className="font-numeric pt-1 text-xs font-bold text-[#005592]">{step.number}</span>
+              <div>
+                <h2 className="text-sm font-bold text-[#0A1E2F] sm:text-base">{step.title}</h2>
+                <p className="mt-1 hidden text-xs leading-5 text-[#526474] sm:block">{step.detail}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
       </div>
     </section>
   );

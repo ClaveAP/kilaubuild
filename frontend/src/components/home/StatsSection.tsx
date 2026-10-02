@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { getApiData } from "@/lib/api";
 import { defaultStats, type StatisticItem } from "./landing-data";
 
-// Animated Count-Up component with smooth cubic ease-out
 const AnimatedCountUp: React.FC<{ value: string; duration?: number }> = ({
   value,
   duration = 1800,
@@ -19,6 +18,11 @@ const AnimatedCountUp: React.FC<{ value: string; duration?: number }> = ({
   useEffect(() => {
     if (targetNum === null || isNaN(targetNum)) return;
 
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      const reducedMotionFrame = requestAnimationFrame(() => setCurrentValue(targetNum));
+      return () => cancelAnimationFrame(reducedMotionFrame);
+    }
+
     let startTimestamp: number | null = null;
     let animationFrameId: number;
 
@@ -27,7 +31,6 @@ const AnimatedCountUp: React.FC<{ value: string; duration?: number }> = ({
       const elapsed = timestamp - startTimestamp;
       const progress = Math.min(elapsed / duration, 1);
 
-      // Easing cubic ease-out: 1 - (1 - t)^3
       const easeOut = 1 - Math.pow(1 - progress, 3);
       const current = Math.floor(easeOut * targetNum);
 
@@ -52,7 +55,7 @@ const AnimatedCountUp: React.FC<{ value: string; duration?: number }> = ({
   }
 
   return (
-    <span className="tabular-nums font-serif">
+    <span className="font-numeric">
       {prefix}
       {currentValue}
       {suffix}
@@ -82,26 +85,21 @@ export const StatsSection: React.FC = () => {
   }, []);
 
   return (
-    <section className="w-full pb-16 sm:pb-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* 4 Soft-Tinted Cards Grid (Exact RooFix Reference Aesthetic) */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+    <section aria-label="KilauBuild dalam angka" className="bg-[#004475] text-white">
+      <div className="site-shell">
+        <div className="grid grid-cols-2 lg:grid-cols-4">
           {stats.map((item) => (
             <div
               key={item.id}
-              className="bg-[#EBF4FA] hover:bg-[#E2EEF7] rounded-3xl p-6 sm:p-8 text-center border border-blue-100/50 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-center items-center"
+              className="flex min-h-48 flex-col justify-between border-white/18 px-5 py-7 even:border-l sm:min-h-56 sm:px-7 sm:py-9 lg:border-l lg:first:border-l-0"
             >
-              <div className="text-4xl sm:text-5xl lg:text-6xl font-normal text-slate-900 tracking-tight mb-2">
+              <div className="text-4xl font-bold tracking-[-0.04em] text-white sm:text-5xl lg:text-6xl">
                 <AnimatedCountUp value={item.value} />
               </div>
-              <div className="text-xs sm:text-sm font-semibold text-slate-700">
-                {item.title}
+              <div className="mt-8 border-t border-white/20 pt-4">
+                <p className="text-sm font-bold text-white">{item.title}</p>
+                {item.unit && <p className="mt-1 text-xs leading-5 text-[#C8DFEC]">{item.unit}</p>}
               </div>
-              {item.unit && (
-                <div className="text-[11px] text-slate-500 mt-1 font-normal">
-                  {item.unit}
-                </div>
-              )}
             </div>
           ))}
         </div>

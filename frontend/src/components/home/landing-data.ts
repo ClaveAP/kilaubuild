@@ -90,7 +90,7 @@ export const services: ServiceItem[] = [
     features: [
       "Struktur berstandar SNI",
       "Termin sesuai progres fisik",
-      "Material transparan sesuai RAB",
+      "Material tercantum di RAB",
     ],
   },
   {
@@ -102,34 +102,34 @@ export const services: ServiceItem[] = [
       "Perluasan ruangan, penambahan lantai, renovasi fasad, perbaikan atap bocor, hingga transformasi denah hunian lama.",
     features: [
       "Survey struktur awal",
-      "Pengerjaan rapi dan terukur",
+      "Tahap kerja dan biaya tercatat",
       "Garansi retensi 3 bulan",
     ],
   },
   {
     title: "Desain Arsitektur & RAB",
-    image: "/house design.png",
+    image: "/design.png",
     icon: PenTool,
     tag: "Perencanaan & 3D",
     description:
       "Perencanaan denah fungsional, visualisasi 3D, gambar kerja teknis, dan rincian biaya untuk keputusan yang lebih pasti.",
     features: [
       "Konsultasi konsep arsitektur",
-      "RAB detail dan transparan",
+      "RAB merinci volume, material, dan biaya",
       "File DED lengkap",
     ],
   },
   {
     title: "Desain Interior & Custom Furniture",
-    image: "/design.png",
+    image: "/house design.png",
     icon: PaintBucket,
     tag: "Interior & Estetika",
     description:
       "Kitchen set, wardrobe, backdrop TV, dan partisi ruangan dengan ukuran presisi serta material HPL multiplek pilihan.",
     features: [
       "Custom sesuai ukuran ruang",
-      "Pilihan tekstur premium",
-      "Workshop interior berpengalaman",
+      "Sampel tekstur sebelum produksi",
+      "Produksi mengikuti gambar ukuran",
     ],
   },
 ];
@@ -137,59 +137,49 @@ export const services: ServiceItem[] = [
 export const fallbackDoneProjects: ProjectDone[] = [
   {
     id: "fallback-done-1",
-    title: "Rumah Tinggal Modern Minimalis",
-    category: "Residensial",
-    budgetRange: "RAB Transparan",
+    title: "Interior Ruang Keluarga",
+    category: "Desain Interior",
+    budgetRange: "Konsep ruang",
     coverImage: "/uploads/project_done/bt3W97OnjLZOEkAJ0biK085nfFDp4xbWsPnxEoeZ.png",
     description:
-      "Dokumentasi proyek hunian dengan pengerjaan fasad, struktur, dan finishing rapi sesuai termin lapangan.",
+      "Konsep living room dengan area duduk, pencahayaan, dan penyimpanan yang disusun untuk aktivitas keluarga.",
     gallery: [
       {
         id: "fallback-done-1-a",
         imageUrl: "/uploads/project_done/bt3W97OnjLZOEkAJ0biK085nfFDp4xbWsPnxEoeZ.png",
-        caption: "Tampak proyek selesai",
-      },
-      {
-        id: "fallback-done-1-b",
-        imageUrl: "/uploads/project_done/8cX7nIp1q47nOZhJKkMLIqGfGbZUyP3u28l88kTN.png",
-        caption: "Detail pengerjaan area rumah",
+        caption: "Visual ruang keluarga",
       },
     ],
   },
   {
     id: "fallback-done-2",
-    title: "Renovasi Hunian Keluarga",
-    category: "Renovasi",
-    budgetRange: "Termin Progres",
+    title: "Fasad Rumah Modern",
+    category: "Desain Arsitektur",
+    budgetRange: "Desain fasad",
     coverImage: "/uploads/project_done/8cX7nIp1q47nOZhJKkMLIqGfGbZUyP3u28l88kTN.png",
     description:
-      "Transformasi rumah lama menjadi ruang yang lebih lapang, terang, dan fungsional untuk aktivitas keluarga.",
+      "Komposisi fasad rumah dengan bukaan lebar, garis vertikal, dan perlindungan matahari pada lantai atas.",
     gallery: [
       {
         id: "fallback-done-2-a",
         imageUrl: "/uploads/project_done/8cX7nIp1q47nOZhJKkMLIqGfGbZUyP3u28l88kTN.png",
-        caption: "Hasil renovasi area utama",
-      },
-      {
-        id: "fallback-done-2-b",
-        imageUrl: "/uploads/project_done/ahKGulPHqwNDLemCcSLEKSXDJeDvougfMgY39Opt.png",
-        caption: "Penyelesaian detail finishing",
+        caption: "Tampak depan rumah",
       },
     ],
   },
   {
     id: "fallback-done-3",
-    title: "Pekerjaan Finishing Interior",
-    category: "Interior",
-    budgetRange: "Material Terpilih",
+    title: "Hunian Dua Lantai",
+    category: "Desain Arsitektur",
+    budgetRange: "Desain fasad",
     coverImage: "/uploads/project_done/ahKGulPHqwNDLemCcSLEKSXDJeDvougfMgY39Opt.png",
     description:
-      "Penyelesaian ruang dengan detail rapi untuk memastikan fungsi harian dan tampilan akhir tetap seimbang.",
+      "Desain rumah dua lantai dengan permainan bidang, balkon, dan area masuk yang terlindung.",
     gallery: [
       {
         id: "fallback-done-3-a",
         imageUrl: "/uploads/project_done/ahKGulPHqwNDLemCcSLEKSXDJeDvougfMgY39Opt.png",
-        caption: "Detail finishing proyek",
+        caption: "Tampak depan rumah dua lantai",
       },
     ],
   },
@@ -225,7 +215,7 @@ export const fallbackOngoingProjects: OngoingProject[] = [
 export const fallbackInteriors: InteriorItem[] = [
   {
     id: "fallback-interior-1",
-    roomType: "Living Room",
+    roomType: "Bedroom",
     style: "Modern Minimalis",
     imageUrl: "/uploads/design_interior/Pni31dq7Oin6qKqwgZnQrMZHKIyDdVaWYPaW9PXO.png",
     description: "Ruang keluarga bersih, terang, dan mudah dirawat untuk aktivitas harian.",
@@ -239,7 +229,7 @@ export const fallbackInteriors: InteriorItem[] = [
   },
   {
     id: "fallback-interior-3",
-    roomType: "Bedroom",
+    roomType: "Bathroom",
     style: "Japandi",
     imageUrl: "/uploads/design_interior/Dbv5R7GLSW043VSbWSHwVItODLgid6THJfLn5Mi5.png",
     description: "Kamar nyaman dengan penyimpanan built-in dan warna natural yang tenang.",

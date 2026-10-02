@@ -1,22 +1,21 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import api, { getApiData } from "@/lib/api";
 import {
-  Calendar,
-  Layers,
   Activity,
-  MessageSquare,
-  LogOut,
-  CheckCircle2,
-  Clock,
-  Phone,
+  Calendar,
   Check,
+  Layers3,
+  LogOut,
+  MessageSquare,
+  Phone,
   RefreshCw,
+  type LucideIcon,
 } from "lucide-react";
+import api, { API_BASE_URL, getApiData } from "@/lib/api";
 
 interface AdminUser {
   id: string;
@@ -65,327 +64,303 @@ interface DashboardOverviewData {
   recentContacts: RecentContact[];
 }
 
+interface MetricDefinition {
+  label: string;
+  value: number;
+  note: string;
+  icon: LucideIcon;
+  tone: string;
+}
+
+const emptyMetrics: DashboardMetrics = {
+  totalProjectsDone: 0,
+  totalOngoingProjects: 0,
+  totalBookings: 0,
+  pendingBookings: 0,
+  totalContacts: 0,
+  unreadContacts: 0,
+};
+
+const bookingStatusLabel: Record<RecentBooking["status"], string> = {
+  PENDING: "Menunggu",
+  CONFIRMED: "Dikonfirmasi",
+  COMPLETED: "Selesai",
+  CANCELLED: "Dibatalkan",
+};
+
+const bookingStatusStyle: Record<RecentBooking["status"], string> = {
+  PENDING: "bg-amber-100 text-amber-800",
+  CONFIRMED: "bg-emerald-100 text-emerald-800",
+  COMPLETED: "bg-blue-100 text-blue-800",
+  CANCELLED: "bg-red-100 text-red-800",
+};
+
+const formatDate = (value: string): string =>
+  new Intl.DateTimeFormat("id-ID", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).format(new Date(value));
+
 export default function AdminDashboardPage() {
   const router = useRouter();
-  const [user] = useState<AdminUser | null>(() => {
-    if (typeof window === "undefined") return null;
-
-    const storedUser = localStorage.getItem("kilaubuild_user");
-    if (!storedUser) return null;
-
-    try {
-      return JSON.parse(storedUser) as AdminUser;
-    } catch (err: unknown) {
-      console.error("Gagal parse user session:", err);
-      return null;
-    }
-  });
+  const [user, setUser] = useState<AdminUser | null>(null);
   const [data, setData] = useState<DashboardOverviewData | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const fetchDashboard = async () => {
+  const apiDocsUrl = useMemo(
+    () => API_BASE_URL.replace(/\/api\/v1\/?$/, "/api/docs"),
+    [],
+  );
+
+  const fetchDashboard = useCallback(async () => {
     setLoading(true);
+    setErrorMessage(null);
     try {
       const response = await getApiData<DashboardOverviewData>("/dashboard/overview");
       setData(response);
-    } catch (err: unknown) {
-      console.warn("Gagal memuat overview dashboard:", err);
+    } catch (error: unknown) {
+      console.warn("Gagal memuat overview dashboard:", error);
+      setErrorMessage("Data dashboard belum dapat dimuat. Periksa koneksi lalu coba lagi.");
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem("kilaubuild_token");
     if (!token) {
-      router.push("/admin/login");
+      router.replace("/admin/login");
       return;
     }
 
     const dashboardTimer = window.setTimeout(() => {
+      const storedUser = localStorage.getItem("kilaubuild_user");
+      if (storedUser) {
+        try {
+          setUser(JSON.parse(storedUser) as AdminUser);
+        } catch (error: unknown) {
+          console.warn("Data sesi admin tidak dapat dibaca:", error);
+        }
+      }
+
       void fetchDashboard();
     }, 0);
 
     return () => window.clearTimeout(dashboardTimer);
-  }, [router]);
+  }, [fetchDashboard, router]);
 
   const handleUpdateBookingStatus = async (
     bookingId: string,
-    newStatus: string,
+    newStatus: RecentBooking["status"],
   ) => {
     setUpdatingId(bookingId);
+    setErrorMessage(null);
     try {
       await api.patch(`/bookings/${bookingId}/status`, { status: newStatus });
       await fetchDashboard();
-    } catch (err: unknown) {
-      console.warn("Gagal mengubah status booking:", err);
-      alert("Gagal mengubah status booking");
+    } catch (error: unknown) {
+      console.warn("Gagal mengubah status booking:", error);
+      setErrorMessage("Status booking belum berubah. Coba lagi.");
     } finally {
       setUpdatingId(null);
     }
   };
 
   const handleMarkContactAsRead = async (contactId: string) => {
+    setUpdatingId(contactId);
+    setErrorMessage(null);
     try {
       await api.patch(`/contacts/${contactId}/read`);
       await fetchDashboard();
-    } catch (err: unknown) {
-      console.warn("Gagal menandai pesan:", err);
-      alert("Gagal menandai pesan");
+    } catch (error: unknown) {
+      console.warn("Gagal menandai pesan:", error);
+      setErrorMessage("Pesan belum dapat ditandai sebagai dibaca. Coba lagi.");
+    } finally {
+      setUpdatingId(null);
     }
   };
 
   const handleLogout = () => {
     localStorage.removeItem("kilaubuild_token");
     localStorage.removeItem("kilaubuild_user");
-    router.push("/admin/login");
+    router.replace("/admin/login");
   };
 
-  const metrics: DashboardMetrics = data?.metrics || {
-    totalProjectsDone: 0,
-    totalOngoingProjects: 0,
-    totalBookings: 0,
-    pendingBookings: 0,
-    totalContacts: 0,
-    unreadContacts: 0,
-  };
+  const metrics = data?.metrics ?? emptyMetrics;
+  const metricDefinitions: MetricDefinition[] = [
+    {
+      label: "Booking survey",
+      value: metrics.totalBookings,
+      note: `${metrics.pendingBookings} menunggu konfirmasi`,
+      icon: Calendar,
+      tone: "text-amber-700 bg-amber-50",
+    },
+    {
+      label: "Pesan masuk",
+      value: metrics.totalContacts,
+      note: `${metrics.unreadContacts} belum dibaca`,
+      icon: MessageSquare,
+      tone: "text-[#005592] bg-[#EAF3F8]",
+    },
+    {
+      label: "Proyek selesai",
+      value: metrics.totalProjectsDone,
+      note: "Tampil di portofolio",
+      icon: Layers3,
+      tone: "text-emerald-700 bg-emerald-50",
+    },
+    {
+      label: "Proyek berjalan",
+      value: metrics.totalOngoingProjects,
+      note: "Aktif di lapangan",
+      icon: Activity,
+      tone: "text-blue-700 bg-blue-50",
+    },
+  ];
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
-      {/* Admin Top Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/" className="flex items-center gap-2.5">
-                <div className="relative w-8 h-8">
-                  <Image src="/logo.png" alt="Logo" fill className="object-contain" />
-                </div>
-                <span className="text-xl font-bold text-[#005592]">
-                  KilauBuild
-                </span>
-              </Link>
-              <span className="hidden sm:inline-block text-xs font-semibold px-2.5 py-1 bg-slate-100 text-slate-700 rounded-md">
-                CMS Panel
+    <div className="min-h-screen bg-[#F4F7F8] text-[#0A1E2F]">
+      <header className="sticky top-0 z-30 border-b border-[#CBD8DF] bg-white/96 backdrop-blur-md">
+        <div className="site-shell flex h-[72px] items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <Link href="/" className="flex min-h-11 items-center gap-2.5 rounded-lg" aria-label="Buka situs publik KilauBuild">
+              <span className="relative h-9 w-9 overflow-hidden rounded-lg bg-white">
+                <Image src="/logo.png" alt="" fill sizes="36px" className="object-contain" />
               </span>
+              <span className="text-lg font-extrabold tracking-[-0.03em] text-[#004475]">KilauBuild</span>
+            </Link>
+            <span className="hidden rounded-lg bg-[#EAF3F8] px-2.5 py-1 text-xs font-bold text-[#005592] sm:inline-block">CMS</span>
+          </div>
+
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="mr-1 hidden text-right md:block">
+              <p className="text-xs font-bold text-[#0A1E2F]">{user?.name || "Admin KilauBuild"}</p>
+              <p className="mt-0.5 text-[11px] text-[#526474]">{user?.email}</p>
             </div>
-
-            <div className="flex items-center gap-4">
-              <div className="text-right hidden sm:block">
-                <div className="text-xs font-bold text-gray-900">
-                  {user?.name || "Admin KilauBuild"}
-                </div>
-                <div className="text-[11px] text-gray-500">{user?.email}</div>
-              </div>
-
-              <button
-                onClick={fetchDashboard}
-                disabled={loading}
-                className="p-2 text-gray-500 hover:text-gray-900 hover:bg-slate-100 rounded-lg transition-colors"
-                title="Refresh Data"
-              >
-                <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
-              </button>
-
-              <button
-                onClick={handleLogout}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-2 rounded-lg transition-colors"
-              >
-                <LogOut className="w-3.5 h-3.5" />
-                <span>Logout</span>
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => void fetchDashboard()}
+              disabled={loading}
+              className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#EAF3F8] text-[#005592] transition-colors hover:bg-[#DCECF5] disabled:text-[#80909A]"
+              aria-label="Muat ulang data dashboard"
+            >
+              <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} aria-hidden="true" />
+            </button>
+            <button type="button" onClick={handleLogout} className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-red-50 px-3 text-sm font-bold text-red-700 transition-colors hover:bg-red-100">
+              <LogOut className="h-4 w-4" aria-hidden="true" />
+              <span className="hidden sm:inline">Keluar</span>
+            </button>
           </div>
         </div>
       </header>
 
-      {/* Main Content Area */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-8">
-        {/* Welcome Section */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <main id="main-content" className="site-shell py-8 sm:py-10" aria-busy={loading}>
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
-              Ringkasan Operasional & Konten
-            </h1>
-            <p className="text-sm text-gray-600 mt-1">
-              Data terintegrasi secara real-time dengan database Neon PostgreSQL.
-            </p>
+            <h1 className="text-3xl font-bold tracking-[-0.04em] text-[#0A1E2F] sm:text-4xl">Ringkasan operasional</h1>
+            <p className="mt-2 text-sm leading-6 text-[#526474]">Booking, pesan, dan status proyek dari data terbaru.</p>
           </div>
-          <div className="flex items-center gap-3">
-            <a
-              href="http://localhost:3000/api/docs"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#005592] bg-[#EBF4FA] hover:bg-[#d8eaf7] px-3.5 py-2 rounded-lg transition-colors"
-            >
-              <span>Buka Swagger API Docs →</span>
-            </a>
-          </div>
+          <a href={apiDocsUrl} target="_blank" rel="noopener noreferrer" className="button-secondary w-fit">
+            Buka dokumentasi API
+          </a>
         </div>
 
-        {/* 4 Primary Metric Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-            <div>
-              <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                Booking Survey
-              </div>
-              <div className="text-3xl font-extrabold text-slate-900 mt-2 tabular-nums">
-                {metrics.totalBookings}
-              </div>
-              <div className="text-xs text-amber-600 font-semibold mt-1 flex items-center gap-1">
-                <Clock className="w-3 h-3" />
-                <span>{metrics.pendingBookings} Menunggu Konfirmasi</span>
-              </div>
-            </div>
-            <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
-              <Calendar className="w-6 h-6" />
-            </div>
+        {errorMessage && (
+          <div role="alert" className="mt-6 flex items-center justify-between gap-4 rounded-xl bg-red-50 p-4 text-sm text-red-700">
+            <span>{errorMessage}</span>
+            <button type="button" onClick={() => void fetchDashboard()} className="shrink-0 font-bold underline underline-offset-4">Coba lagi</button>
           </div>
+        )}
 
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-            <div>
-              <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                Pesan Masuk Inbox
-              </div>
-              <div className="text-3xl font-extrabold text-slate-900 mt-2 tabular-nums">
-                {metrics.totalContacts}
-              </div>
-              <div className="text-xs text-[#005592] font-semibold mt-1">
-                {metrics.unreadContacts} Belum Dibaca
-              </div>
-            </div>
-            <div className="w-12 h-12 rounded-xl bg-[#EBF4FA] text-[#005592] flex items-center justify-center">
-              <MessageSquare className="w-6 h-6" />
-            </div>
+        <section aria-label="Metrik dashboard" className="mt-8 overflow-hidden rounded-2xl border border-[#B8CAD4] bg-white">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4">
+            {metricDefinitions.map((metric, index) => {
+              const MetricIcon = metric.icon;
+              return (
+                <div key={metric.label} className={`min-h-44 p-5 sm:p-6 ${index > 0 ? "border-t border-[#CBD8DF] sm:border-t-0 sm:[&:nth-child(2n)]:border-l lg:border-l" : ""} ${index > 1 ? "sm:border-t lg:border-t-0" : ""}`}>
+                  <div className="flex items-start justify-between gap-4">
+                    <p className="text-sm font-bold text-[#526474]">{metric.label}</p>
+                    <span className={`flex h-10 w-10 items-center justify-center rounded-xl ${metric.tone}`}>
+                      <MetricIcon className="h-5 w-5" aria-hidden="true" />
+                    </span>
+                  </div>
+                  {loading && !data ? (
+                    <div className="mt-8 h-10 w-20 animate-pulse rounded-lg bg-[#EAF3F8]" />
+                  ) : (
+                    <p className="mt-6 text-4xl font-bold tabular-nums tracking-[-0.04em]">{metric.value}</p>
+                  )}
+                  <p className="mt-2 text-xs font-semibold text-[#526474]">{metric.note}</p>
+                </div>
+              );
+            })}
           </div>
+        </section>
 
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-            <div>
-              <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                Proyek Selesai
-              </div>
-              <div className="text-3xl font-extrabold text-slate-900 mt-2 tabular-nums">
-                {metrics.totalProjectsDone}
-              </div>
-              <div className="text-xs text-emerald-600 font-semibold mt-1 flex items-center gap-1">
-                <CheckCircle2 className="w-3 h-3" />
-                <span>Portofolio Aktif</span>
-              </div>
-            </div>
-            <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-              <Layers className="w-6 h-6" />
-            </div>
+        <section className="mt-8 overflow-hidden rounded-2xl border border-[#B8CAD4] bg-white">
+          <div className="border-b border-[#CBD8DF] px-5 py-5 sm:px-6">
+            <h2 className="text-xl font-bold">Booking survey terbaru</h2>
+            <p className="mt-1 text-sm text-[#526474]">Konfirmasi jadwal atau perbarui status kunjungan.</p>
           </div>
-
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-            <div>
-              <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                Proyek Berjalan
-              </div>
-              <div className="text-3xl font-extrabold text-slate-900 mt-2 tabular-nums">
-                {metrics.totalOngoingProjects}
-              </div>
-              <div className="text-xs text-blue-600 font-semibold mt-1">
-                Konstruksi Aktif Lapangan
-              </div>
-            </div>
-            <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-              <Activity className="w-6 h-6" />
-            </div>
-          </div>
-        </div>
-
-        {/* Section 1: Recent Bookings Table */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-          <div className="p-6 border-b border-slate-200 flex items-center justify-between">
-            <div>
-              <h2 className="text-lg font-bold text-gray-900">
-                Pengajuan Booking Survey Terbaru
-              </h2>
-              <p className="text-xs text-gray-500 mt-0.5">
-                Jadwal survey lokasi yang diajukan oleh calon klien melalui website.
-              </p>
-            </div>
-            <span className="text-xs text-slate-400 font-medium">Anti Double-Booking Aktif</span>
-          </div>
-
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-gray-600">
-              <thead className="bg-slate-50 text-xs font-bold text-slate-700 uppercase tracking-wider border-b border-slate-200">
+            <table className="w-full min-w-[900px] text-left text-sm">
+              <caption className="sr-only">Daftar pengajuan booking survey terbaru</caption>
+              <thead className="border-b border-[#CBD8DF] bg-[#F4F7F8] text-xs font-bold text-[#526474]">
                 <tr>
-                  <th className="py-3.5 px-6">Nama Klien</th>
-                  <th className="py-3.5 px-6">Layanan & Lokasi</th>
-                  <th className="py-3.5 px-6">Jadwal Survey</th>
-                  <th className="py-3.5 px-6">Kontak WA</th>
-                  <th className="py-3.5 px-6">Status</th>
-                  <th className="py-3.5 px-6 text-right">Aksi Status</th>
+                  <th scope="col" className="px-6 py-3.5">Klien</th>
+                  <th scope="col" className="px-6 py-3.5">Layanan & lokasi</th>
+                  <th scope="col" className="px-6 py-3.5">Jadwal</th>
+                  <th scope="col" className="px-6 py-3.5">WhatsApp</th>
+                  <th scope="col" className="px-6 py-3.5">Status</th>
+                  <th scope="col" className="px-6 py-3.5 text-right">Ubah status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
-                {!data?.recentBookings || data.recentBookings.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="py-8 text-center text-gray-400 text-xs">
-                      Belum ada data pengajuan survey.
-                    </td>
-                  </tr>
+              <tbody className="divide-y divide-[#E1E9ED]">
+                {loading && !data ? (
+                  <tr><td colSpan={6} className="px-6 py-10 text-center text-sm text-[#526474]">Memuat booking...</td></tr>
+                ) : !data?.recentBookings.length ? (
+                  <tr><td colSpan={6} className="px-6 py-10 text-center text-sm text-[#526474]">Belum ada pengajuan survey.</td></tr>
                 ) : (
-                  data.recentBookings.map((b) => (
-                    <tr key={b.id} className="hover:bg-slate-50/50 transition-colors">
-                      <td className="py-4 px-6 font-semibold text-gray-900">
-                        {b.clientName}
-                        <div className="text-xs text-gray-400 font-normal">{b.email}</div>
+                  data.recentBookings.map((booking) => (
+                    <tr key={booking.id} className="transition-colors hover:bg-[#F8FAFB]">
+                      <td className="px-6 py-4 font-bold text-[#0A1E2F]">
+                        {booking.clientName}
+                        <span className="mt-1 block text-xs font-normal text-[#71818D]">{booking.email}</span>
                       </td>
-                      <td className="py-4 px-6">
-                        <div className="font-medium text-gray-800">{b.serviceType}</div>
-                        <div className="text-xs text-gray-500 truncate max-w-xs">{b.location}</div>
+                      <td className="px-6 py-4">
+                        <span className="font-semibold text-[#294153]">{booking.serviceType}</span>
+                        <span className="mt-1 block max-w-xs truncate text-xs text-[#71818D]">{booking.location}</span>
                       </td>
-                      <td className="py-4 px-6">
-                        <div className="font-semibold text-[#005592] tabular-nums">
-                          {new Date(b.bookingDate).toISOString().split("T")[0]}
-                        </div>
-                        <div className="text-xs text-gray-500">{b.timeSlot}</div>
+                      <td className="px-6 py-4 tabular-nums">
+                        <span className="font-bold text-[#005592]">{formatDate(booking.bookingDate)}</span>
+                        <span className="mt-1 block text-xs text-[#71818D]">{booking.timeSlot} WIB</span>
                       </td>
-                      <td className="py-4 px-6">
-                        <a
-                          href={`https://wa.me/${b.phone.replace(/^0/, "62")}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#005592] hover:text-[#0066AE] bg-[#EBF4FA] px-2.5 py-1 rounded-md transition-colors"
-                        >
-                          <Phone className="w-3 h-3 text-[#25D366]" />
-                          <span>{b.phone}</span>
+                      <td className="px-6 py-4">
+                        <a href={`https://wa.me/${booking.phone.replace(/^0/, "62")}`} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-[#EAF3F8] px-3 text-xs font-bold text-[#005592] transition-colors hover:bg-[#DCECF5]">
+                          <Phone className="h-3.5 w-3.5" aria-hidden="true" />
+                          {booking.phone}
                         </a>
                       </td>
-                      <td className="py-4 px-6">
-                        <span
-                          className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold ${
-                            b.status === "CONFIRMED"
-                              ? "bg-emerald-100 text-emerald-800"
-                              : b.status === "CANCELLED"
-                              ? "bg-red-100 text-red-800"
-                              : b.status === "COMPLETED"
-                              ? "bg-blue-100 text-blue-800"
-                              : "bg-amber-100 text-amber-800"
-                          }`}
-                        >
-                          {b.status}
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-bold ${bookingStatusStyle[booking.status]}`}>
+                          {bookingStatusLabel[booking.status]}
                         </span>
                       </td>
-                      <td className="py-4 px-6 text-right">
+                      <td className="px-6 py-4 text-right">
+                        <label htmlFor={`booking-status-${booking.id}`} className="sr-only">Status booking {booking.clientName}</label>
                         <select
-                          disabled={updatingId === b.id}
-                          value={b.status}
-                          onChange={(e) =>
-                            handleUpdateBookingStatus(b.id, e.target.value)
-                          }
-                          className="text-xs border border-gray-300 rounded-lg px-2.5 py-1.5 bg-white focus:outline-none focus:ring-1 focus:ring-[#005592] transition-colors"
+                          id={`booking-status-${booking.id}`}
+                          disabled={updatingId === booking.id}
+                          value={booking.status}
+                          onChange={(event) => void handleUpdateBookingStatus(booking.id, event.target.value as RecentBooking["status"])}
+                          className="min-h-10 rounded-lg border border-[#B8CAD4] bg-white px-3 text-xs font-semibold text-[#294153] focus:border-[#005592] focus:outline-none focus:ring-2 focus:ring-[#66B2E0]/30"
                         >
-                          <option value="PENDING">PENDING</option>
-                          <option value="CONFIRMED">CONFIRMED</option>
-                          <option value="COMPLETED">COMPLETED</option>
-                          <option value="CANCELLED">CANCELLED</option>
+                          <option value="PENDING">Menunggu</option>
+                          <option value="CONFIRMED">Dikonfirmasi</option>
+                          <option value="COMPLETED">Selesai</option>
+                          <option value="CANCELLED">Dibatalkan</option>
                         </select>
                       </td>
                     </tr>
@@ -394,74 +369,59 @@ export default function AdminDashboardPage() {
               </tbody>
             </table>
           </div>
-        </div>
+        </section>
 
-        {/* Section 2: Recent Contact Messages Table */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-          <div className="p-6 border-b border-slate-200 flex items-center justify-between">
-            <div>
-              <h2 className="text-lg font-bold text-gray-900">
-                Pesan Masuk Terkini (Kontak & Feedback)
-              </h2>
-              <p className="text-xs text-gray-500 mt-0.5">
-                Pertanyaan dan konsultasi dari form website publik.
-              </p>
-            </div>
+        <section className="mt-8 overflow-hidden rounded-2xl border border-[#B8CAD4] bg-white">
+          <div className="border-b border-[#CBD8DF] px-5 py-5 sm:px-6">
+            <h2 className="text-xl font-bold">Pesan masuk terbaru</h2>
+            <p className="mt-1 text-sm text-[#526474]">Pertanyaan yang dikirim melalui formulir situs publik.</p>
           </div>
-
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-gray-600">
-              <thead className="bg-slate-50 text-xs font-bold text-slate-700 uppercase tracking-wider border-b border-slate-200">
+            <table className="w-full min-w-[760px] text-left text-sm">
+              <caption className="sr-only">Daftar pesan kontak terbaru</caption>
+              <thead className="border-b border-[#CBD8DF] bg-[#F4F7F8] text-xs font-bold text-[#526474]">
                 <tr>
-                  <th className="py-3.5 px-6">Pengirim</th>
-                  <th className="py-3.5 px-6">Subjek & Pesan</th>
-                  <th className="py-3.5 px-6">Waktu Masuk</th>
-                  <th className="py-3.5 px-6">Status Baca</th>
-                  <th className="py-3.5 px-6 text-right">Aksi</th>
+                  <th scope="col" className="px-6 py-3.5">Pengirim</th>
+                  <th scope="col" className="px-6 py-3.5">Pesan</th>
+                  <th scope="col" className="px-6 py-3.5">Tanggal</th>
+                  <th scope="col" className="px-6 py-3.5">Status</th>
+                  <th scope="col" className="px-6 py-3.5 text-right">Aksi</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
-                {!data?.recentContacts || data.recentContacts.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} className="py-8 text-center text-gray-400 text-xs">
-                      Belum ada pesan masuk di inbox.
-                    </td>
-                  </tr>
+              <tbody className="divide-y divide-[#E1E9ED]">
+                {loading && !data ? (
+                  <tr><td colSpan={5} className="px-6 py-10 text-center text-sm text-[#526474]">Memuat pesan...</td></tr>
+                ) : !data?.recentContacts.length ? (
+                  <tr><td colSpan={5} className="px-6 py-10 text-center text-sm text-[#526474]">Belum ada pesan masuk.</td></tr>
                 ) : (
-                  data.recentContacts.map((c) => (
-                    <tr key={c.id} className="hover:bg-slate-50/50 transition-colors">
-                      <td className="py-4 px-6 font-semibold text-gray-900">
-                        {c.name}
-                        <div className="text-xs text-gray-400 font-normal">{c.email}</div>
+                  data.recentContacts.map((contact) => (
+                    <tr key={contact.id} className="transition-colors hover:bg-[#F8FAFB]">
+                      <td className="px-6 py-4 font-bold text-[#0A1E2F]">
+                        {contact.name}
+                        <span className="mt-1 block text-xs font-normal text-[#71818D]">{contact.email}</span>
                       </td>
-                      <td className="py-4 px-6">
-                        <div className="font-semibold text-gray-800">
-                          {c.subject || "Pesan Umum"}
-                        </div>
-                        <div className="text-xs text-gray-500 line-clamp-1 max-w-md">
-                          {c.message}
-                        </div>
+                      <td className="px-6 py-4">
+                        <span className="font-semibold text-[#294153]">{contact.subject || "Pesan umum"}</span>
+                        <span className="mt-1 block max-w-md truncate text-xs text-[#71818D]">{contact.message}</span>
                       </td>
-                      <td className="py-4 px-6 text-xs text-gray-500 tabular-nums">
-                        {new Date(c.createdAt).toLocaleDateString("id-ID")}
-                      </td>
-                      <td className="py-4 px-6">
-                        {c.isRead ? (
-                          <span className="text-xs text-gray-400 font-medium">Sudah Dibaca</span>
+                      <td className="px-6 py-4 text-xs tabular-nums text-[#526474]">{formatDate(contact.createdAt)}</td>
+                      <td className="px-6 py-4">
+                        {contact.isRead ? (
+                          <span className="text-xs font-semibold text-[#71818D]">Sudah dibaca</span>
                         ) : (
-                          <span className="text-xs text-[#005592] font-bold bg-[#EBF4FA] px-2.5 py-0.5 rounded-full">
-                            Baru
-                          </span>
+                          <span className="inline-flex rounded-full bg-[#EAF3F8] px-2.5 py-1 text-xs font-bold text-[#005592]">Baru</span>
                         )}
                       </td>
-                      <td className="py-4 px-6 text-right">
-                        {!c.isRead && (
+                      <td className="px-6 py-4 text-right">
+                        {!contact.isRead && (
                           <button
-                            onClick={() => handleMarkContactAsRead(c.id)}
-                            className="inline-flex items-center gap-1 text-xs font-semibold text-[#005592] hover:underline"
+                            type="button"
+                            disabled={updatingId === contact.id}
+                            onClick={() => void handleMarkContactAsRead(contact.id)}
+                            className="inline-flex min-h-10 items-center gap-1.5 rounded-lg px-3 text-xs font-bold text-[#005592] transition-colors hover:bg-[#EAF3F8] disabled:text-[#80909A]"
                           >
-                            <Check className="w-3.5 h-3.5" />
-                            <span>Tandai Dibaca</span>
+                            <Check className="h-3.5 w-3.5" aria-hidden="true" />
+                            Tandai dibaca
                           </button>
                         )}
                       </td>
@@ -471,7 +431,7 @@ export default function AdminDashboardPage() {
               </tbody>
             </table>
           </div>
-        </div>
+        </section>
       </main>
     </div>
   );
