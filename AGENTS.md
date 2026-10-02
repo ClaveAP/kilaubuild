@@ -68,12 +68,55 @@ Selamat datang di proyek **KilauBuild**! Dokumen ini adalah panduan standar dan 
 
 ## 4. Workflow & Do's & Don'ts
 
-### DO:
+### Prinsip Utama
+- Terapkan **minimum sufficient change**: ubah sesedikit mungkin kode untuk menyelesaikan kebutuhan secara utuh dan benar.
+- Hormati arsitektur, pola, naming, dan dependency yang sudah ada sebelum membuat pola baru.
+- Jangan membuat fitur spekulatif, abstraksi prematur, fallback berlapis, atau konfigurasi yang belum dibutuhkan.
+- Utamakan kode yang sederhana, eksplisit, mudah diuji, dan mudah dihapus dibanding solusi yang terlihat canggih tetapi menambah beban pemeliharaan.
+- Satu sumber kebenaran untuk setiap data atau aturan bisnis. Jangan menduplikasi konstanta, validasi, tipe, query, atau business rule di banyak tempat.
+
+### Sebelum Mengubah Kode
+- Baca file terkait, dokumentasi, call site, tipe, dan test sebelum menentukan solusi.
+- Periksa `git status` dan diff. Anggap perubahan yang sudah ada sebagai pekerjaan pengguna; jangan menimpa, menghapus, atau memformat ulang tanpa kebutuhan langsung.
+- Identifikasi root cause. Jangan menambal gejala apabila penyebabnya dapat diperbaiki dengan perubahan yang tetap kecil.
+- Pastikan perubahan berada pada modul pemilik perilaku tersebut. Hindari menyebarkan logic lintas layer tanpa alasan kuat.
+
+### Aturan Implementasi
+- Edit hanya file yang relevan. Jangan melakukan refactor, rename, reformat massal, atau perubahan metadata yang tidak diperlukan.
+- Gunakan utilitas atau komponen yang sudah ada sebelum menambah file, helper, hook, service, dependency, atau state baru.
+- Tambahkan abstraksi hanya jika benar-benar mengurangi kompleksitas atau duplikasi nyata, bukan untuk kemungkinan kebutuhan masa depan.
+- Jangan menambah package jika standard library atau dependency yang sudah terpasang cukup. Jika package baru memang perlu, pilih yang terawat dan jelaskan alasannya.
+- Pertahankan kompatibilitas API dan database kecuali perubahan kontrak diminta secara eksplisit. Perubahan kontrak harus diperbarui pada tipe, validasi, dokumentasi, dan consumer terkait.
+- Jangan menyimpan data turunan yang dapat dihitung dengan murah dari sumber data utama.
+- Hindari `any`, type assertion yang tidak aman, silent catch, magic value, dead code, dan komentar yang hanya mengulang kode.
+- Jangan copy-paste seluruh file untuk perubahan kecil. Buat patch terarah dan pertahankan struktur serta gaya lokal.
+
+### Database & Backend
+- Query harus mengambil field yang diperlukan saja, menggunakan index/constraint yang sesuai, dan menghindari N+1 query.
+- Validasi aturan bisnis di backend meskipun frontend juga melakukan validasi.
+- Operasi multi-step yang harus atomik wajib memakai transaction.
+- Migration dan seeding harus idempotent sejauh memungkinkan; jangan menjalankan destructive migration tanpa instruksi dan persetujuan eksplisit.
+- Jangan melakukan network call, query database, atau pekerjaan mahal berulang kali jika hasil aman untuk digunakan kembali dalam scope request yang sama.
+
+### Frontend
+- Hindari state yang dapat diturunkan dari props atau state lain, effect yang tidak perlu, dan fetch ganda.
+- Pertahankan komponen fokus pada satu tanggung jawab, tetapi jangan memecah komponen kecil hanya demi jumlah file.
+- Selalu tangani loading, empty, error, disabled, dan responsive state sesuai risiko fitur.
+- Optimalkan setelah ada alasan terukur; jangan menambahkan memoization, virtualization, atau caching secara membabi buta.
+
+### Verifikasi & Selesai
+- Jalankan pemeriksaan paling kecil yang relevan terlebih dahulu, lalu perluas sesuai blast radius: typecheck, lint, unit test, build, dan test integrasi bila diperlukan.
+- Untuk bug fix, tambahkan atau perbarui test yang mereproduksi bug jika infrastrukturnya tersedia dan biayanya masuk akal.
+- Periksa diff akhir untuk memastikan tidak ada secret, debug log, generated file, perubahan lockfile tak disengaja, atau perubahan di luar scope.
+- Jangan menyatakan selesai jika build/test penting belum dijalankan. Jika tidak dapat dijalankan, sebutkan alasan dan risiko tersisanya.
+- Laporan akhir harus singkat: apa yang berubah, alasan keputusan penting, hasil verifikasi, dan hal yang masih perlu tindakan pengguna.
+
+### DO
 - Selalu cek `docs/API_SPEC.md` dan `docs/SCHEMA.md` sebelum membuat endpoint atau query baru.
 - Berikan error handling yang jelas menggunakan Exception bawaan NestJS (`NotFoundException`, `BadRequestException`, `UnauthorizedException`).
 - Gunakan environment variables (`.env`) untuk URL database, JWT secret, dan port server.
 
-### DON'T:
+### DON'T
 - Dilarang menyimpan credentials atau secret key di dalam kode sumber.
 - Dilarang mengubah skema database secara drastis tanpa mendokumentasikannya di `docs/SCHEMA.md`.
 - Dilarang membuat endpoint tanpa dokumentasi Swagger.
