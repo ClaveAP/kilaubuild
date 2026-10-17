@@ -371,6 +371,7 @@ export default function AdminDashboardPage() {
             <Link
               href="/"
               target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[#005592] px-4 py-2 text-xs font-bold text-white shadow-xs transition-all hover:bg-[#0066AE] active:scale-95"
             >
               <Globe className="h-3.5 w-3.5" aria-hidden="true" />
