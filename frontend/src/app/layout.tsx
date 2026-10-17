@@ -1,27 +1,14 @@
 import type { Metadata } from "next";
-import { Inter, Noto_Serif, JetBrains_Mono } from "next/font/google";
+import { Poppins } from "next/font/google";
 import { AppChrome } from "@/components/layout/AppChrome";
 import "react-day-picker/style.css";
 import "./globals.css";
 
-const editorialFont = Noto_Serif({
+const poppins = Poppins({
   subsets: ["latin"],
-  variable: "--font-editorial",
-  weight: ["400", "500", "600", "700"],
+  variable: "--font-poppins",
+  weight: ["300", "400", "500", "600", "700", "800"],
   style: ["normal", "italic"],
-  display: "swap",
-});
-
-const sansFont = Inter({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  weight: ["300", "400", "500", "600", "700"],
-  display: "swap",
-});
-
-const numericFont = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-numeric",
   display: "swap",
 });
 
@@ -40,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id" className={`${editorialFont.variable} ${sansFont.variable} ${numericFont.variable} scroll-smooth`}>
+    <html lang="id" className={`${poppins.variable} scroll-smooth`}>
       <body className="bg-[#F4F7F8] font-sans text-[#0A1E2F] antialiased">
         <a href="#main-content" className="skip-link">
           Lewati ke konten utama

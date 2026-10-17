@@ -351,7 +351,7 @@ export default function AdminDashboardPage() {
               <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>Sistem Operasional Real-time</span>
             </div>
-            <h1 className="mt-2.5 font-heading text-3xl font-normal tracking-[-0.025em] text-[#0A1E2F] sm:text-4xl">
+            <h1 className="mt-2.5 font-heading text-3xl font-bold tracking-[-0.025em] text-[#0A1E2F] sm:text-4xl">
               Ringkasan <em className="font-serif italic font-normal text-[#005592]">Operasional</em>
             </h1>
             <p className="mt-1.5 text-sm leading-relaxed text-[#526474]">
@@ -448,7 +448,7 @@ export default function AdminDashboardPage() {
               </div>
               <div>
                 <div className="flex items-center gap-2.5">
-                  <h2 className="font-heading text-lg font-normal tracking-tight text-[#0A1E2F] sm:text-xl">
+                  <h2 className="font-heading text-lg font-bold tracking-tight text-[#0A1E2F] sm:text-xl">
                     Booking Survey <em className="font-serif italic font-normal text-[#005592]">Terbaru</em>
                   </h2>
                   <span className="rounded-full border border-[#005592]/20 bg-[#EAF3F8] px-2.5 py-0.5 font-numeric text-xs font-bold tabular-nums text-[#005592]">
@@ -607,7 +607,7 @@ export default function AdminDashboardPage() {
               </div>
               <div>
                 <div className="flex items-center gap-2.5">
-                  <h2 className="font-heading text-lg font-normal tracking-tight text-[#0A1E2F] sm:text-xl">
+                  <h2 className="font-heading text-lg font-bold tracking-tight text-[#0A1E2F] sm:text-xl">
                     Pesan Masuk <em className="font-serif italic font-normal text-[#005592]">Terbaru</em>
                   </h2>
                   <span className="rounded-full border border-[#005592]/20 bg-[#EAF3F8] px-2.5 py-0.5 font-numeric text-xs font-bold tabular-nums text-[#005592]">

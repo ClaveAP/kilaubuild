@@ -98,7 +98,7 @@ export default function AdminLoginPage() {
 
         {/* Center: Editorial Heading & Bento Trust Cards */}
         <div className="relative z-10 my-auto py-8">
-          <h1 className="font-heading text-3xl font-normal leading-tight tracking-[-0.025em] text-white xl:text-4xl 2xl:text-5xl">
+          <h1 className="font-heading text-3xl font-bold leading-tight tracking-[-0.025em] text-white xl:text-4xl 2xl:text-5xl">
             Kelola jadwal, pesan, dan <em className="font-serif italic font-normal text-[#8EC7E9]">progres proyek</em> dari satu tempat.
           </h1>
 
@@ -174,7 +174,7 @@ export default function AdminLoginPage() {
               <div className="inline-flex items-center gap-1.5 rounded-md bg-[#EAF3F8] px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-[#005592]">
                 <span>Autentikasi Aman</span>
               </div>
-              <h2 className="mt-3 font-heading text-2xl font-normal tracking-[-0.025em] text-[#0A1E2F] sm:text-3xl">
+              <h2 className="mt-3 font-heading text-2xl font-bold tracking-[-0.025em] text-[#0A1E2F] sm:text-3xl">
                 Masuk ke <em className="font-serif italic font-normal text-[#005592]">CMS</em>
               </h2>
               <p className="mt-2 text-sm leading-relaxed text-[#526474]">

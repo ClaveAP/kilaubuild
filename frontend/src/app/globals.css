@@ -14,11 +14,11 @@
   --color-paper-blue: #eaf3f8;
   --color-line: #cbd8df;
   --color-line-strong: #9db3bf;
-  --font-heading: var(--font-editorial), Georgia, serif;
-  --font-editorial: var(--font-editorial), Georgia, serif;
-  --font-serif: var(--font-editorial), Georgia, serif;
-  --font-sans: var(--font-sans), system-ui, sans-serif;
-  --font-numeric: var(--font-numeric), monospace;
+  --font-heading: var(--font-poppins), system-ui, sans-serif;
+  --font-sans: var(--font-poppins), system-ui, sans-serif;
+  --font-numeric: var(--font-poppins), sans-serif;
+  --font-editorial: Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-serif: Georgia, Cambria, "Times New Roman", Times, serif;
 }
 
 :root {
@@ -65,15 +65,18 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: var(--font-editorial), Georgia, serif;
-  letter-spacing: -0.025em;
+  font-family: var(--font-heading), system-ui, sans-serif;
+  letter-spacing: -0.02em;
 }
 
 .hero-editorial-title,
 .section-heading,
-.font-heading,
+.font-heading {
+  font-family: var(--font-heading), system-ui, sans-serif;
+}
+
 .font-serif {
-  font-family: var(--font-editorial), Georgia, serif;
+  font-family: var(--font-serif), Georgia, serif;
 }
 
 button,
@@ -152,17 +155,17 @@ button:disabled {
 
 .section-heading {
   max-width: 19ch;
-  font-family: var(--font-editorial), Georgia, serif;
+  font-family: var(--font-heading), system-ui, sans-serif;
   font-size: clamp(2.25rem, 3.6vw, 4rem);
-  font-weight: 500;
-  letter-spacing: -0.035em;
+  font-weight: 600;
+  letter-spacing: -0.025em;
   line-height: 1.13;
   color: inherit;
   text-wrap: balance;
 }
 
 .font-numeric {
-  font-family: var(--font-numeric), monospace;
+  font-family: var(--font-numeric), sans-serif;
   font-variant-numeric: tabular-nums;
 }
 
