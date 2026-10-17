@@ -223,28 +223,30 @@ button:disabled {
   transform: translateY(-2px);
 }
 
-.form-field {
-  min-height: 48px;
-  width: 100%;
-  border: 1px solid #b8c7cf;
-  border-radius: 0.75rem;
-  background: #ffffff;
-  padding: 0.75rem 0.875rem;
-  color: var(--ink);
-  font-size: 1rem;
-  transition:
-    border-color 160ms ease-out,
-    box-shadow 160ms ease-out;
-}
+@layer components {
+  .form-field {
+    min-height: 48px;
+    width: 100%;
+    border: 1px solid #b8c7cf;
+    border-radius: 0.75rem;
+    background: #ffffff;
+    padding: 0.75rem 0.875rem;
+    color: var(--ink);
+    font-size: 0.9375rem;
+    transition:
+      border-color 160ms ease-out,
+      box-shadow 160ms ease-out;
+  }
 
-.form-field::placeholder {
-  color: #536775;
-}
+  .form-field::placeholder {
+    color: #71818d;
+  }
 
-.form-field:focus {
-  border-color: var(--brand-primary);
-  box-shadow: 0 0 0 3px rgba(102, 178, 224, 0.26);
-  outline: none;
+  .form-field:focus {
+    border-color: var(--brand-primary);
+    box-shadow: 0 0 0 3px rgba(102, 178, 224, 0.26);
+    outline: none;
+  }
 }
 
 .hero-photo-reveal::after {
