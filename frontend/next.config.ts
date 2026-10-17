@@ -36,8 +36,18 @@ const nextConfig: NextConfig = {
         port: "3000",
         pathname: "/uploads/**",
       },
-      ...apiMediaPattern,
+    ...apiMediaPattern,
     ],
+  },
+  async redirects() {
+    return [
+      { source: "/proyek", destination: "/#portofolio", permanent: false },
+      { source: "/cara-kerja", destination: "/#cara-kerja", permanent: false },
+      { source: "/layanan", destination: "/#layanan", permanent: false },
+      { source: "/interior", destination: "/#interior", permanent: false },
+      { source: "/faq", destination: "/#faq", permanent: false },
+      { source: "/booking", destination: "/#booking", permanent: false },
+    ];
   },
 };
 

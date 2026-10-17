@@ -1,5 +1,7 @@
+"use client";
+
 import Image from "next/image";
-import { ArrowUpRight, Mail, MapPin, Phone } from "lucide-react";
+import { ArrowUpRight, EnvelopeSimple, MapPin, Phone } from "@phosphor-icons/react";
 
 const currentYear = new Date().getFullYear();
 
@@ -14,13 +16,13 @@ export const Footer = () => {
             </h2>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row lg:col-span-4 lg:flex-col xl:flex-row">
-            <a href="#booking" className="button-light w-full">
+            <a href="#booking" className="button-light flex items-center justify-center gap-2 w-full">
               Jadwalkan survey
-              <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+              <ArrowUpRight size={16} weight="bold" aria-hidden="true" />
             </a>
             <a href="https://wa.me/6287776360795" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-white/30 px-4 text-sm font-bold text-white transition-colors hover:border-white hover:bg-white/10">
               WhatsApp
-              <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+              <ArrowUpRight size={16} weight="bold" aria-hidden="true" />
             </a>
           </div>
         </div>
@@ -46,7 +48,7 @@ export const Footer = () => {
             <ul className="mt-4 space-y-3 text-sm text-[#B9CAD5]">
               <li><a href="#layanan" className="transition-colors hover:text-white">Bangun rumah</a></li>
               <li><a href="#layanan" className="transition-colors hover:text-white">Renovasi</a></li>
-              <li><a href="#layanan" className="transition-colors hover:text-white">Desain & RAB</a></li>
+              <li><a href="#layanan" className="transition-colors hover:text-white">Desain &amp; RAB</a></li>
               <li><a href="#interior" className="transition-colors hover:text-white">Interior custom</a></li>
             </ul>
           </div>
@@ -54,7 +56,8 @@ export const Footer = () => {
           <div className="lg:col-span-2">
             <h3 className="text-sm font-bold text-white">Jelajahi</h3>
             <ul className="mt-4 space-y-3 text-sm text-[#B9CAD5]">
-              <li><a href="#tentang" className="transition-colors hover:text-white">Sistem termin</a></li>
+              <li><a href="#tentang" className="transition-colors hover:text-white">Tentang kami</a></li>
+              <li><a href="#cara-kerja" className="transition-colors hover:text-white">Sistem termin</a></li>
               <li><a href="#portofolio" className="transition-colors hover:text-white">Portofolio</a></li>
               <li><a href="#testimoni" className="transition-colors hover:text-white">Testimoni</a></li>
               <li><a href="#faq" className="transition-colors hover:text-white">FAQ</a></li>
@@ -62,17 +65,17 @@ export const Footer = () => {
           </div>
 
           <address className="space-y-4 not-italic sm:col-span-2 lg:col-span-4">
-            <h3 className="text-sm font-bold text-white">Workshop & kontak</h3>
+            <h3 className="text-sm font-bold text-white">Workshop &amp; kontak</h3>
             <p className="grid grid-cols-[1.5rem_1fr] gap-3 text-sm leading-6 text-[#B9CAD5]">
-              <MapPin className="mt-0.5 h-4 w-4 text-[#8CC9EC]" aria-hidden="true" />
+              <MapPin size={18} weight="bold" className="mt-0.5 text-[#8CC9EC]" aria-hidden="true" />
               Jl. Raya Citayam No.34, Pd. Jaya, Cipayung, Kota Depok 16444
             </p>
             <a href="https://wa.me/6287776360795" target="_blank" rel="noopener noreferrer" className="grid grid-cols-[1.5rem_1fr] gap-3 text-sm text-[#B9CAD5] transition-colors hover:text-white">
-              <Phone className="h-4 w-4 text-[#8CC9EC]" aria-hidden="true" />
+              <Phone size={18} weight="bold" className="text-[#8CC9EC]" aria-hidden="true" />
               <span className="font-numeric">+62 877-7636-0795</span>
             </a>
             <a href="mailto:kilaubuild@gmail.com" className="grid grid-cols-[1.5rem_1fr] gap-3 text-sm text-[#B9CAD5] transition-colors hover:text-white">
-              <Mail className="h-4 w-4 text-[#8CC9EC]" aria-hidden="true" />
+              <EnvelopeSimple size={18} weight="bold" className="text-[#8CC9EC]" aria-hidden="true" />
               kilaubuild@gmail.com
             </a>
           </address>

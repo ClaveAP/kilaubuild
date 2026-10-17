@@ -7,8 +7,17 @@
   --color-brand-dark: #004475;
   --color-brand-soft: #ebf4fa;
   --color-brand-tint: #e3f2fd;
+  --color-ink: #0a1e2f;
+  --color-ink-muted: #526474;
+  --color-ink-subtle: #41596b;
+  --color-paper: #f4f7f8;
+  --color-paper-blue: #eaf3f8;
+  --color-line: #cbd8df;
+  --color-line-strong: #9db3bf;
   --font-heading: var(--font-heading), system-ui, sans-serif;
   --font-sans: var(--font-sans), system-ui, sans-serif;
+  --font-editorial: var(--font-editorial), Georgia, serif;
+  --font-numeric: var(--font-numeric), monospace;
 }
 
 :root {
@@ -31,7 +40,13 @@
 }
 
 html {
-  scroll-padding-top: 80px;
+  scroll-padding-top: 72px;
+}
+
+@media (min-width: 1024px) {
+  html {
+    scroll-padding-top: 0;
+  }
 }
 
 body {
@@ -41,10 +56,6 @@ body {
   font-family: var(--font-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-section[id] {
-  scroll-margin-top: 80px;
 }
 
 h1,
@@ -227,7 +238,7 @@ button:disabled {
 }
 
 .form-field::placeholder {
-  color: #71818d;
+  color: #536775;
 }
 
 .form-field:focus {
@@ -314,9 +325,19 @@ button:disabled {
   *,
   *::before,
   *::after {
-    scroll-behavior: auto !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  button,
+  a,
+  input,
+  select,
+  textarea,
+  [role="button"] {
+    transition-duration: 150ms !important;
+    transition-property: color, background-color, border-color, opacity, box-shadow !important;
   }
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Inter, Noto_Serif, JetBrains_Mono } from "next/font/google";
+import { AppChrome } from "@/components/layout/AppChrome";
 import "react-day-picker/style.css";
 import "./globals.css";
 
@@ -50,7 +51,7 @@ export default function RootLayout({
         <a href="#main-content" className="skip-link">
           Lewati ke konten utama
         </a>
-        {children}
+        <AppChrome>{children}</AppChrome>
       </body>
     </html>
   );

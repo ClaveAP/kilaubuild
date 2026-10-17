@@ -32,3 +32,10 @@ yarn-error.log*
 
 # Prisma Generated / DB
 *.db
+
+# AI Tools & Local Skills
+.agents/
+.claude/
+.commandcode/
+skills-lock.json
+

@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { Activity, ArrowUpRight, Layers3, MapPin, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, MapPin, Pulse, Stack, X } from "@phosphor-icons/react";
 import { getApiData, resolveMediaUrl } from "@/lib/api";
+import { CoverflowCarousel } from "@/components/ui/coverflow-carousel";
 import {
   fallbackDoneProjects,
   fallbackOngoingProjects,
@@ -29,9 +30,12 @@ export const PortfolioSection = () => {
   const [activeTab, setActiveTab] = useState<"done" | "ongoing">("done");
   const [doneProjects, setDoneProjects] = useState<ProjectDone[]>(fallbackDoneProjects);
   const [ongoingProjects, setOngoingProjects] = useState<OngoingProject[]>(fallbackOngoingProjects);
+  const [activeProjectIndex, setActiveProjectIndex] = useState(0);
+  const [activeOngoingIndex, setActiveOngoingIndex] = useState(0);
   const [selectedProject, setSelectedProject] = useState<ProjectDone | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const modalContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -55,7 +59,35 @@ export const PortfolioSection = () => {
     if (!selectedProject) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setSelectedProject(null);
+      if (event.key === "Escape") {
+        setSelectedProject(null);
+        return;
+      }
+
+      if (event.key === "Tab") {
+        const dialog = modalContainerRef.current;
+        if (!dialog) return;
+
+        const focusableElements = dialog.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusableElements.length === 0) return;
+
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        if (event.shiftKey) {
+          if (document.activeElement === firstElement) {
+            event.preventDefault();
+            lastElement.focus();
+          }
+        } else {
+          if (document.activeElement === lastElement) {
+            event.preventDefault();
+            firstElement.focus();
+          }
+        }
+      }
     };
 
     const previousOverflow = document.body.style.overflow;
@@ -70,135 +102,179 @@ export const PortfolioSection = () => {
     };
   }, [selectedProject]);
 
+  const visibleProjectIndex = Math.min(activeProjectIndex, Math.max(doneProjects.length - 1, 0));
+  const activeProject = doneProjects[visibleProjectIndex];
+  const visibleOngoingIndex = Math.min(activeOngoingIndex, Math.max(ongoingProjects.length - 1, 0));
+  const activeOngoingProject = ongoingProjects[visibleOngoingIndex];
+
   return (
-    <section id="portofolio" className="bg-[#071A2B] py-20 text-white sm:py-28">
+    <section id="portofolio" className="scroll-mt-20 lg:scroll-mt-6 border-b border-[#CBD8DF] bg-[#FBFBFA] py-16 text-[#0A1E2F] sm:py-20 lg:py-24">
       <div className="site-shell">
-        <div className="grid gap-9 border-b border-white/20 pb-10 lg:grid-cols-12 lg:items-end">
-          <h2 className="section-heading text-white lg:col-span-7">Lihat hasilnya. Ikuti prosesnya.</h2>
-          <div className="lg:col-span-5">
-            <p className="max-w-xl text-base leading-7 text-[#C8DCE8]">
-              Galeri ini memuat proyek selesai dan progres yang sedang berjalan. Buka tiap proyek untuk melihat dokumentasinya.
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between border-b border-[#CBD8DF] pb-8">
+          <div className="max-w-2xl">
+            <div className="inline-flex items-center gap-2.5 rounded-full border border-[#005592]/15 bg-[#005592]/5 px-3.5 py-1 text-xs font-semibold text-[#005592]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#005592]" />
+              <span>Portofolio &amp; Progres Lapangan</span>
+            </div>
+            <h2 className="mt-4 text-[clamp(2.1rem,3.4vw,3.25rem)] font-bold leading-[1.12] tracking-[-0.025em] text-[#092436]">
+              Lihat hasilnya. Ikuti <span className="font-serif italic font-normal text-[#005592]">prosesnya.</span>
+            </h2>
+          </div>
+
+          <div className="flex flex-col items-start gap-4 lg:items-end">
+            <p className="max-w-md text-sm sm:text-base leading-relaxed text-[#526474]">
+              Dokumentasi nyata proyek selesai dan pekerjaan fisik yang sedang berjalan aktif di Depok dan Jabodetabek.
             </p>
-            <div className="mt-7 inline-grid grid-cols-2 rounded-xl border border-white/25 p-1" role="group" aria-label="Jenis portofolio">
+            <div className="inline-flex rounded-full border border-[#CBD8DF] bg-white p-1.5 shadow-xs" role="group" aria-label="Jenis portofolio">
               <button
                 type="button"
                 onClick={() => setActiveTab("done")}
                 aria-pressed={activeTab === "done"}
-                className={`flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 text-sm font-bold transition-colors ${
-                  activeTab === "done" ? "bg-white text-[#004475]" : "text-white hover:bg-white/10"
+                className={`flex min-h-10 items-center justify-center gap-2 rounded-full px-5 text-xs font-bold transition-all duration-300 ${
+                  activeTab === "done" ? "bg-[#005592] text-white shadow-xs" : "text-[#526474] hover:text-[#092436]"
                 }`}
               >
-                <Layers3 className="h-4 w-4" aria-hidden="true" />
+                <Stack size={16} weight="bold" aria-hidden="true" />
                 Selesai (<span className="font-numeric">{doneProjects.length}</span>)
               </button>
               <button
                 type="button"
                 onClick={() => setActiveTab("ongoing")}
                 aria-pressed={activeTab === "ongoing"}
-                className={`flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 text-sm font-bold transition-colors ${
-                  activeTab === "ongoing" ? "bg-white text-[#004475]" : "text-white hover:bg-white/10"
+                className={`flex min-h-10 items-center justify-center gap-2 rounded-full px-5 text-xs font-bold transition-all duration-300 ${
+                  activeTab === "ongoing" ? "bg-[#005592] text-white shadow-xs" : "text-[#526474] hover:text-[#092436]"
                 }`}
               >
-                <Activity className="h-4 w-4" aria-hidden="true" />
-                Berjalan (<span className="font-numeric">{ongoingProjects.length}</span>)
+                <Pulse size={16} weight="bold" aria-hidden="true" />
+                Sedang Berjalan (<span className="font-numeric">{ongoingProjects.length}</span>)
               </button>
             </div>
           </div>
         </div>
 
         {activeTab === "done" ? (
-          <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-12">
-            {doneProjects.map((project, index) => {
-              const featured = index === 0;
-
-              return (
-                <button
-                  type="button"
-                  key={project.id}
-                  onClick={(event) => {
-                    triggerRef.current = event.currentTarget;
-                    setSelectedProject(project);
+          <div className="mt-4 lg:flex lg:flex-col lg:justify-center lg:mt-0">
+            {activeProject ? (
+              <>
+                <CoverflowCarousel
+                  items={doneProjects.map((project) => ({
+                    id: project.id,
+                    image: resolveMediaUrl(project.coverImage, "/header.png"),
+                    alt: project.title,
+                    title: project.title,
+                  }))}
+                  index={visibleProjectIndex}
+                  onIndexChange={setActiveProjectIndex}
+                  onOpen={(index, trigger) => {
+                    triggerRef.current = trigger;
+                    setSelectedProject(doneProjects[index]);
                   }}
-                  className={`group relative min-h-[390px] overflow-hidden rounded-2xl bg-[#173247] text-left md:min-h-[470px] ${
-                    featured ? "md:col-span-2 lg:col-span-7 lg:min-h-[610px]" : "lg:col-span-5"
-                  }`}
-                  aria-label={`Buka galeri ${project.title}`}
-                >
-                  <Image
-                    src={resolveMediaUrl(project.coverImage, "/header.png")}
-                    alt=""
-                    fill
-                    sizes={featured ? "(max-width: 1024px) 100vw, 58vw" : "(max-width: 1024px) 50vw, 42vw"}
-                    className="object-cover transition-transform duration-500 group-hover:scale-[1.025]"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#071A2B]/95 via-[#071A2B]/12 to-transparent" />
-                  <div className="absolute inset-x-0 bottom-0 p-6 sm:p-8">
-                    <div className="mb-3 flex items-center justify-between gap-4 text-xs font-semibold text-[#B9D8E9]">
-                      <span>{project.category}</span>
-                      <span>{project.budgetRange || "RAB sesuai lingkup"}</span>
-                    </div>
-                    <h3 className={`font-bold leading-tight text-white ${featured ? "text-3xl sm:text-4xl" : "text-2xl"}`}>
-                      {project.title}
-                    </h3>
-                    <p className="mt-3 max-w-xl text-sm leading-6 text-white/78">{project.description}</p>
-                    <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-white">
-                      Buka dokumentasi
-                      <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden="true" />
+                />
+                <div className="mx-auto mt-6 flex max-w-3xl flex-col items-start gap-4 rounded-2xl border border-[#E2ECF2] bg-white p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6 shadow-xs">
+                  <div>
+                    <span className="font-numeric text-xs font-bold uppercase tracking-wider text-[#005592]">
+                      {activeProject.category}
                     </span>
+                    <h3 className="mt-1 text-xl font-bold tracking-tight text-[#092436] sm:text-2xl">{activeProject.title}</h3>
                   </div>
-                </button>
-              );
-            })}
+                  <button
+                    type="button"
+                    onClick={(event) => {
+                      triggerRef.current = event.currentTarget;
+                      setSelectedProject(activeProject);
+                    }}
+                    className="group inline-flex min-h-11 shrink-0 items-center gap-2.5 rounded-full bg-[#005592] pl-5 pr-2 py-1.5 text-xs font-bold text-white shadow-xs transition-all duration-300 hover:bg-[#0066AE] active:scale-[0.98]"
+                  >
+                    <span>Buka Dokumentasi</span>
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 transition-transform duration-300 group-hover:translate-x-0.5">
+                      <ArrowUpRight size={14} weight="bold" aria-hidden="true" />
+                    </span>
+                  </button>
+                </div>
+              </>
+            ) : (
+              <p className="py-16 text-center text-[#526474]">Belum ada proyek selesai untuk ditampilkan.</p>
+            )}
           </div>
         ) : (
-          <div className="mt-10 border-y border-white/20">
-            {ongoingProjects.map((project, index) => (
-              <article
-                key={project.id}
-                className={`grid gap-6 py-7 sm:grid-cols-[14rem_1fr] sm:items-center lg:grid-cols-[19rem_1fr_auto] ${
-                  index > 0 ? "border-t border-white/20" : ""
-                }`}
+          <div className="mt-8 lg:mt-10">
+            {activeOngoingProject ? (
+              <div
+                role="region"
+                aria-roledescription="carousel"
+                aria-label="Proyek yang sedang berjalan"
+                className="outline-none focus-visible:ring-2 focus-visible:ring-[#005592]"
+                tabIndex={0}
+                onKeyDown={(event) => {
+                  if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+                    event.preventDefault();
+                    setActiveOngoingIndex((current) => Math.min(Math.max(current + (event.key === "ArrowRight" ? 1 : -1), 0), ongoingProjects.length - 1));
+                  }
+                }}
               >
-                <div className="relative min-h-48 overflow-hidden rounded-xl bg-[#173247] sm:min-h-40">
-                  <Image
-                    src={resolveMediaUrl(project.imageUrl, "/on going project.png")}
-                    alt={project.title}
-                    fill
-                    sizes="(max-width: 640px) 100vw, 304px"
-                    className="object-cover"
-                  />
-                </div>
-                <div>
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-semibold text-[#B9D8E9]">
-                    <span className="inline-flex items-center gap-1.5">
-                      <MapPin className="h-3.5 w-3.5" aria-hidden="true" />
-                      {project.location}
-                    </span>
-                    <span>Proyek berjalan</span>
+                <article key={activeOngoingProject.id} className="grid gap-8 rounded-[2rem] border border-[#E2ECF2] bg-white p-6 sm:p-9 shadow-[0_12px_36px_-16px_rgba(0,68,117,0.08)] lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)] lg:items-center lg:gap-12">
+                  <div className="relative h-[270px] overflow-hidden rounded-2xl bg-[#EBF4FA] sm:h-[340px] lg:h-[clamp(300px,42svh,440px)]">
+                    <Image
+                      src={resolveMediaUrl(activeOngoingProject.imageUrl, "/on going project.png")}
+                      alt={activeOngoingProject.title}
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 55vw"
+                      className="object-cover transition-transform duration-700 hover:scale-[1.02]"
+                    />
                   </div>
-                  <h3 className="mt-3 text-2xl font-bold text-white">{project.title}</h3>
-                  <p className="mt-3 max-w-2xl text-sm leading-6 text-[#C8DCE8]">
-                    {project.description || "Pengerjaan fisik berjalan sesuai tahap yang disepakati."}
+                  <div className="max-w-xl">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-[#EBF4FA] px-3 py-1 text-xs font-bold text-[#005592]">
+                        <MapPin size={14} weight="bold" aria-hidden="true" />
+                        {activeOngoingProject.location}
+                      </span>
+                      <span className="rounded-full border border-[#005592]/20 px-3 py-1 text-xs font-semibold text-[#005592]">
+                        Progres Lapangan Aktif
+                      </span>
+                    </div>
+                    <h3 aria-live="polite" className="mt-4 text-2xl font-bold tracking-tight text-[#092436] sm:text-3xl lg:text-4xl">{activeOngoingProject.title}</h3>
+                    <p className="mt-3 text-sm sm:text-base leading-relaxed text-[#526474]">
+                      {activeOngoingProject.description || "Pengerjaan fisik berjalan sesuai tahap yang disepakati."}
+                    </p>
+                    <div className="mt-6 rounded-2xl border border-[#E2ECF2] bg-[#F8FBFD] p-5">
+                      {activeOngoingProject.id.startsWith("fallback-") ? (
+                        <div>
+                          <span className="text-xs font-semibold text-[#526474]">Status dokumentasi</span>
+                          <p className="mt-1 text-lg font-bold text-[#092436]">Tahap konstruksi aktif</p>
+                        </div>
+                      ) : (
+                        <div>
+                          <div className="flex items-end justify-between gap-4">
+                            <span className="text-xs font-semibold text-[#526474]">Progres fisik lapangan</span>
+                            <strong className="font-numeric text-2xl font-bold text-[#005592]">{activeOngoingProject.progressPercentage}%</strong>
+                          </div>
+                          <div className="mt-2.5 h-2.5 overflow-hidden rounded-full bg-[#CBD8DF]/60" aria-hidden="true">
+                            <div className="h-full rounded-full bg-[#005592] transition-all duration-500" style={{ width: `${activeOngoingProject.progressPercentage}%` }} />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </article>
+                <div className="mt-6 flex flex-wrap items-center justify-between gap-4 pt-2">
+                  <p className="text-xs sm:text-sm font-semibold text-[#526474]" aria-live="polite">
+                    Proyek <span className="font-numeric text-[#005592]">{String(visibleOngoingIndex + 1).padStart(2, "0")} / {String(ongoingProjects.length).padStart(2, "0")}</span>
                   </p>
+                  {ongoingProjects.length > 1 && (
+                    <div className="flex items-center gap-2.5">
+                      <button type="button" disabled={visibleOngoingIndex === 0} onClick={() => setActiveOngoingIndex(visibleOngoingIndex - 1)} className="inline-flex min-h-10 items-center gap-2 rounded-full border border-[#CBD8DF] bg-white px-4 text-xs font-bold text-[#092436] transition-all hover:bg-[#F8FBFD] disabled:cursor-not-allowed disabled:opacity-40">
+                        <ArrowLeft size={15} weight="bold" aria-hidden="true" /> Sebelumnya
+                      </button>
+                      <button type="button" disabled={visibleOngoingIndex === ongoingProjects.length - 1} onClick={() => setActiveOngoingIndex(visibleOngoingIndex + 1)} className="inline-flex min-h-10 items-center gap-2 rounded-full bg-[#005592] px-4 text-xs font-bold text-white transition-all hover:bg-[#0066AE] disabled:cursor-not-allowed disabled:opacity-40">
+                        Berikutnya <ArrowRight size={15} weight="bold" aria-hidden="true" />
+                      </button>
+                    </div>
+                  )}
                 </div>
-                {project.id.startsWith("fallback-") ? (
-                  <div className="min-w-48 border-l border-white/20 pl-5">
-                    <span className="text-xs font-semibold text-[#B9D8E9]">Status dokumentasi</span>
-                    <p className="mt-2 text-lg font-bold text-white">Tahap aktif</p>
-                  </div>
-                ) : (
-                  <div className="min-w-48">
-                    <div className="flex items-end justify-between gap-4">
-                      <span className="text-xs font-semibold text-[#B9D8E9]">Progres fisik</span>
-                      <strong className="font-numeric text-3xl font-bold text-white">{project.progressPercentage}%</strong>
-                    </div>
-                    <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/15" aria-hidden="true">
-                      <div className="h-full rounded-full bg-[#66B2E0]" style={{ width: `${project.progressPercentage}%` }} />
-                    </div>
-                  </div>
-                )}
-              </article>
-            ))}
+              </div>
+            ) : (
+              <p className="py-16 text-center text-[#526474]">Belum ada proyek berjalan untuk ditampilkan.</p>
+            )}
           </div>
         )}
       </div>
@@ -211,6 +287,7 @@ export const PortfolioSection = () => {
           }}
         >
           <div
+            ref={modalContainerRef}
             role="dialog"
             aria-modal="true"
             aria-labelledby="project-gallery-title"
@@ -230,7 +307,7 @@ export const PortfolioSection = () => {
                 className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#EAF3F8] text-[#004475] transition-colors hover:bg-[#DCECF5]"
                 aria-label="Tutup galeri"
               >
-                <X className="h-5 w-5" aria-hidden="true" />
+                <X size={20} weight="bold" aria-hidden="true" />
               </button>
             </div>
 

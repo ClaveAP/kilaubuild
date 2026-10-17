@@ -85,25 +85,38 @@ export const StatsSection: React.FC = () => {
   }, []);
 
   return (
-    <section aria-label="KilauBuild dalam angka" className="bg-[#004475] text-white">
+    <div role="region" aria-label="KilauBuild dalam angka" className="mt-12 sm:mt-16">
       <div className="site-shell">
-        <div className="grid grid-cols-2 lg:grid-cols-4">
-          {stats.map((item) => (
-            <div
-              key={item.id}
-              className="flex min-h-48 flex-col justify-between border-white/18 px-5 py-7 even:border-l sm:min-h-56 sm:px-7 sm:py-9 lg:border-l lg:first:border-l-0"
-            >
-              <div className="text-4xl font-bold tracking-[-0.04em] text-white sm:text-5xl lg:text-6xl">
-                <AnimatedCountUp value={item.value} />
+        <div className="rounded-[2rem] border border-[#005592]/30 bg-gradient-to-br from-[#092436] via-[#0A263B] to-[#061824] p-8 sm:p-10 text-white shadow-[0_16px_40px_-20px_rgba(9,36,54,0.3)]">
+          <div className="mb-6 flex items-center justify-between border-b border-white/10 pb-4">
+            <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#8CC9EC]">
+              KilauBuild dalam Angka
+            </span>
+            <span className="text-xs text-slate-300">
+              Depok &amp; Jabodetabek
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 gap-6 lg:grid-cols-4 lg:gap-8">
+            {stats.map((item, index) => (
+              <div
+                key={item.id}
+                className={`flex flex-col justify-between ${
+                  index > 0 ? "lg:border-l lg:border-white/15 lg:pl-8" : ""
+                }`}
+              >
+                <div className="text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
+                  <AnimatedCountUp value={item.value} />
+                </div>
+                <div className="mt-3 border-t border-white/15 pt-2.5">
+                  <p className="text-sm font-bold text-white">{item.title}</p>
+                  {item.unit && <p className="mt-0.5 text-xs text-[#C8DFEC]">{item.unit}</p>}
+                </div>
               </div>
-              <div className="mt-8 border-t border-white/20 pt-4">
-                <p className="text-sm font-bold text-white">{item.title}</p>
-                {item.unit && <p className="mt-1 text-xs leading-5 text-[#C8DFEC]">{item.unit}</p>}
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 };

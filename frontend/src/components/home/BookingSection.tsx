@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   addMonths,
   format,
@@ -10,7 +10,14 @@ import {
   startOfMonth,
 } from "date-fns";
 import { id } from "date-fns/locale";
-import { AlertCircle, CheckCircle2, Clock3, Phone } from "lucide-react";
+import {
+  ArrowUpRight,
+  CaretLeft,
+  CaretRight,
+  CheckCircle,
+  WarningCircle,
+  WhatsappLogo,
+} from "@phosphor-icons/react";
 import { DayPicker } from "react-day-picker";
 import { getApiData, postApiData } from "@/lib/api";
 
@@ -49,6 +56,8 @@ interface BookingCalendarData {
   };
   dates: CalendarDate[];
 }
+
+type BookingStep = "schedule" | "details";
 
 const getNextBusinessDay = (): Date => {
   const date = startOfDay(new Date());
@@ -101,6 +110,8 @@ export const BookingSection = () => {
   const [submitting, setSubmitting] = useState(false);
   const [successData, setSuccessData] = useState<BookingSuccessResponse | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [bookingStep, setBookingStep] = useState<BookingStep>("schedule");
+  const stepHeadingRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
     let active = true;
@@ -145,25 +156,42 @@ export const BookingSection = () => {
     isTimeOccupied(selectedTime, bookedTime),
   );
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    setErrorMessage(null);
-
+  const validateSchedule = (): boolean => {
     if (isWeekend(selectedDate)) {
       setErrorMessage("Pilih hari kerja, Senin sampai Jumat.");
-      return;
+      return false;
     }
 
     const timeInMinutes = timeToMinutes(selectedTime);
     if (timeInMinutes < 540 || timeInMinutes > 1200 || timeInMinutes % 30 !== 0) {
       setErrorMessage("Pilih jam antara 09.00–20.00 WIB dalam interval 30 menit.");
-      return;
+      return false;
     }
 
     if (selectedTimeIsBooked) {
       setErrorMessage(`Jam ${selectedTime} sudah dibooking. Silakan pilih jam lain.`);
-      return;
+      return false;
     }
+
+    return true;
+  };
+
+  const changeStep = (step: BookingStep) => {
+    setErrorMessage(null);
+    setBookingStep(step);
+    window.requestAnimationFrame(() => stepHeadingRef.current?.focus());
+  };
+
+  const continueToDetails = () => {
+    setErrorMessage(null);
+    if (validateSchedule()) changeStep("details");
+  };
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setErrorMessage(null);
+
+    if (!validateSchedule()) return;
 
     setSubmitting(true);
     try {
@@ -191,52 +219,59 @@ export const BookingSection = () => {
   };
 
   return (
-    <section id="booking" className="site-grid bg-[#F4F7F8] py-20 sm:py-28">
+    <section id="booking" className="scroll-mt-20 lg:scroll-mt-6 border-b border-[#CBD8DF] bg-[#FBFBFA] py-16 sm:py-20 lg:py-24">
       <div className="site-shell">
-        <div className="grid items-start gap-12 lg:grid-cols-12 lg:gap-16">
-          <div className="space-y-6 lg:col-span-5">
-            <h2 className="section-heading">
-              Pilih sendiri waktu survey lokasi.
+        <div className="grid w-full items-start gap-10 lg:grid-cols-12 lg:gap-12 xl:gap-16">
+          <div className="space-y-4 lg:col-span-5">
+            <div className="inline-flex items-center gap-2.5 rounded-full border border-[#005592]/15 bg-[#005592]/5 px-3.5 py-1 text-xs font-semibold text-[#005592]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#005592]" />
+              <span>Jadwal Survei Lapangan</span>
+            </div>
+            <h2 className="mt-2 text-[clamp(2.1rem,3.4vw,3.25rem)] font-bold leading-[1.12] tracking-[-0.025em] text-[#092436]">
+              Pilih sendiri waktu <span className="font-serif italic font-normal text-[#005592]">survei lokasi.</span>
             </h2>
 
-            <p className="section-copy">
-              Survey tersedia Senin sampai Jumat, pukul 09.00–20.00 WIB. Kalender menampilkan tanggal dan jam yang sudah terisi.
+            <p className="text-sm sm:text-base leading-relaxed text-[#526474]">
+              Survei tersedia Senin sampai Jumat, pukul 09.00–20.00 WIB. Kalender interaktif ini menampilkan tanggal dan jam yang tersedia secara langsung.
             </p>
 
-            <dl className="border-y border-[#9DB3BF]">
-              <div className="grid gap-2 py-5 sm:grid-cols-[10rem_1fr] sm:gap-6">
-                <dt className="text-lg font-bold text-[#0A1E2F]">Kalender terbuka</dt>
-                <dd className="text-sm leading-6 text-[#526474]">
-                  Tanggal bertanda biru sudah memiliki jadwal. Pilih tanggalnya untuk melihat jam yang terisi.
-                </dd>
+            <div className="space-y-3 pt-2">
+              <div className="rounded-2xl border border-[#E2ECF2] bg-white p-5 shadow-xs">
+                <h4 className="text-sm font-bold text-[#092436]">Kalender Terbuka &amp; Real-time</h4>
+                <p className="mt-1 text-xs sm:text-sm leading-relaxed text-[#526474]">
+                  Tanggal bertanda biru menunjukkan adanya jadwal aktif. Pilih tanggal untuk melihat slot jam yang masih lowong.
+                </p>
               </div>
-              <div className="grid gap-2 border-t border-[#CBD8DF] py-5 sm:grid-cols-[10rem_1fr] sm:gap-6">
-                <dt className="text-lg font-bold text-[#0A1E2F]">RAB terperinci</dt>
-                <dd className="text-sm leading-6 text-[#526474]">
-                  Setelah survey, Anda menerima rincian material dan biaya untuk dipelajari tanpa komitmen.
-                </dd>
+              <div className="rounded-2xl border border-[#E2ECF2] bg-white p-5 shadow-xs">
+                <h4 className="text-sm font-bold text-[#092436]">RAB Terperinci &amp; Bebas Komitmen</h4>
+                <p className="mt-1 text-xs sm:text-sm leading-relaxed text-[#526474]">
+                  Setelah survei, Anda akan menerima rincian spesifikasi material dan RAB untuk dipelajari tanpa paksaan kontrak.
+                </p>
               </div>
-            </dl>
+            </div>
 
             <div className="pt-2">
-              <p className="mb-2 text-xs font-semibold text-[#526474]">Perlu jawaban lebih cepat?</p>
+              <p className="mb-2 text-xs font-semibold text-[#526474]">Perlu konfirmasi cepat?</p>
               <a
-                href="https://wa.me/6287776360795"
+                href="https://wa.me/6287776360795?text=Halo%20KilauBuild%2C%20saya%20ingin%20tanya%20seputar%20survey%20lokasi"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-[#005592] transition-colors hover:text-[#0066AE]"
+                className="group inline-flex min-h-11 items-center gap-2.5 rounded-full bg-[#005592] pl-5 pr-2 py-1.5 text-xs font-bold text-white shadow-xs transition-all duration-300 hover:bg-[#0066AE] active:scale-[0.98]"
               >
-                <Phone className="h-4 w-4 text-[#25D366]" aria-hidden="true" />
-                <span>WhatsApp <span className="font-numeric">+62 877-7636-0795</span></span>
+                <WhatsappLogo size={16} weight="fill" className="text-white" />
+                <span>Tanyakan via WhatsApp</span>
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 transition-transform duration-300 group-hover:translate-x-0.5">
+                  <ArrowUpRight size={14} weight="bold" />
+                </span>
               </a>
             </div>
           </div>
 
-          <div className="rounded-2xl border border-[#B8CAD4] bg-white p-6 shadow-[0_24px_70px_-48px_rgba(0,68,117,0.55)] sm:p-9 lg:col-span-7">
+          <div className="rounded-[2rem] border border-[#E2ECF2] bg-white p-6 shadow-[0_12px_36px_-16px_rgba(0,68,117,0.08)] sm:p-9 lg:col-span-7">
             {successData ? (
               <div className="space-y-6 py-8 text-center">
                 <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#EBF4FA] text-[#005592]">
-                  <CheckCircle2 className="h-9 w-9" aria-hidden="true" />
+                  <CheckCircle size={36} weight="fill" aria-hidden="true" />
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold text-[#0A1E2F]">Jadwal survey sudah tercatat.</h3>
@@ -256,13 +291,14 @@ export const BookingSection = () => {
                     rel="noopener noreferrer"
                     className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] px-6 text-sm font-semibold text-white transition-colors hover:bg-[#20ba59] sm:w-auto"
                   >
-                    <Phone className="h-4 w-4" aria-hidden="true" />
+                    <WhatsappLogo size={20} weight="fill" aria-hidden="true" />
                     Konfirmasi via WhatsApp
                   </a>
                   <button
                     type="button"
                     onClick={() => {
                       setSuccessData(null);
+                      setBookingStep("schedule");
                       setSelectedTime("09:00");
                       setFormData({
                         clientName: "",
@@ -280,20 +316,49 @@ export const BookingSection = () => {
                 </div>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-7">
-                <div className="border-b border-slate-200 pb-4">
-                  <h3 className="text-2xl font-bold text-[#0A1E2F]">Pilih jadwal kunjungan</h3>
-                  <p className="mt-1 text-sm text-slate-500">Hari kerja, 09.00–20.00 WIB. Waktu ditampilkan dalam zona Jakarta.</p>
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div className="flex items-start justify-between gap-6 border-b border-slate-200 pb-4">
+                  <div>
+                    <h3
+                      ref={stepHeadingRef}
+                      tabIndex={-1}
+                      className="text-xl font-bold text-[#0A1E2F] outline-none sm:text-2xl"
+                    >
+                      {bookingStep === "schedule" ? "Pilih jadwal kunjungan" : "Lengkapi data proyek"}
+                    </h3>
+                    <p className="mt-1 text-sm text-slate-500">
+                      {bookingStep === "schedule"
+                        ? "Hari kerja, 09.00–20.00 WIB. Waktu zona Jakarta."
+                        : "Data ini membantu tim menyiapkan survey yang tepat."}
+                    </p>
+                  </div>
+                  <ol aria-label="Progres booking" className="flex shrink-0 items-center gap-2 pt-1">
+                    <li
+                      aria-current={bookingStep === "schedule" ? "step" : undefined}
+                      className={`font-numeric flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold ${bookingStep === "schedule" ? "bg-[#005592] text-white" : "bg-[#EBF4FA] text-[#005592]"}`}
+                    >
+                      01
+                    </li>
+                    <li aria-hidden="true" className="h-px w-4 bg-[#B8CAD4]" />
+                    <li
+                      aria-current={bookingStep === "details" ? "step" : undefined}
+                      className={`font-numeric flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold ${bookingStep === "details" ? "bg-[#005592] text-white" : "bg-slate-100 text-slate-500"}`}
+                    >
+                      02
+                    </li>
+                  </ol>
                 </div>
 
                 {(errorMessage || calendarError) && (
                   <div role="alert" className="flex items-start gap-3 rounded-xl bg-red-50 p-4 text-sm text-red-700">
-                    <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />
+                    <WarningCircle size={20} weight="bold" className="mt-0.5 shrink-0" aria-hidden="true" />
                     <span>{errorMessage ?? calendarError}</span>
                   </div>
                 )}
 
-                <div className="grid gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(15rem,0.85fr)]">
+                {bookingStep === "schedule" ? (
+                  <>
+                <div className="grid gap-5 xl:grid-cols-[minmax(0,1.15fr)_minmax(15rem,0.85fr)]">
                   <div className="min-w-0">
                     <div className="mb-3 flex items-center justify-between gap-3">
                       <label className="text-sm font-semibold text-slate-900">Tanggal survey</label>
@@ -325,15 +390,14 @@ export const BookingSection = () => {
                     </div>
                   </div>
 
-                  <div className="space-y-5 border-t border-slate-200 pt-5 xl:border-l xl:border-t-0 xl:pl-6 xl:pt-0">
+                  <div className="space-y-4 border-t border-slate-200 pt-5 xl:border-l xl:border-t-0 xl:pl-5 xl:pt-0">
                     <div>
                       <p className="text-xs font-semibold text-[#005592]">Tanggal dipilih</p>
                       <p className="mt-1 text-lg font-bold leading-snug text-[#0A1E2F]">{formatDisplayDate(selectedDate)}</p>
                     </div>
                     <div>
                       <label htmlFor="booking-time" className="text-sm font-semibold text-slate-900">Jam kedatangan</label>
-                      <div className="relative mt-2">
-                        <Clock3 className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" aria-hidden="true" />
+                      <div className="mt-2">
                         <input
                           id="booking-time"
                           type="time"
@@ -347,7 +411,7 @@ export const BookingSection = () => {
                           }}
                           aria-describedby="booking-time-hint"
                           required
-                          className="form-field py-2.5 pl-10 pr-3"
+                          className="form-field py-2.5"
                         />
                       </div>
                       <p id="booking-time-hint" className="mt-2 text-xs leading-5 text-slate-500">Pilih per 30 menit, dari 09.00 sampai 20.00 WIB.</p>
@@ -372,15 +436,42 @@ export const BookingSection = () => {
                     </div>
                   </div>
                 </div>
-
-                <div className="grid gap-4 border-t border-slate-200 pt-6 sm:grid-cols-2">
+                <button
+                  type="button"
+                  onClick={continueToDetails}
+                  disabled={selectedTimeIsBooked}
+                  className="group flex min-h-12 w-full items-center justify-between rounded-full bg-[#005592] py-2 pl-6 pr-2 text-xs font-bold text-white shadow-xs transition-all duration-300 hover:bg-[#0066AE] disabled:bg-[#80909A] active:scale-[0.98]"
+                >
+                  <span>Lanjut Isi Data Proyek</span>
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 transition-transform duration-300 group-hover:translate-x-0.5">
+                    <CaretRight size={14} weight="bold" aria-hidden="true" />
+                  </span>
+                </button>
+                  </>
+                ) : (
+                  <>
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#E2ECF2] bg-[#F8FBFD] px-5 py-3.5 text-xs sm:text-sm">
                   <div>
-                    <label htmlFor="booking-service" className="mb-1.5 block text-sm font-semibold text-slate-800">Layanan</label>
+                    <p className="font-bold text-[#092436]">{formatDisplayDate(selectedDate)}</p>
+                    <p className="mt-0.5 text-[#526474]">Pukul <span className="font-numeric font-bold text-[#005592]">{selectedTime}</span> WIB</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => changeStep("schedule")}
+                    className="min-h-9 rounded-full border border-[#005592]/20 bg-white px-3.5 text-xs font-bold text-[#005592] transition-colors hover:bg-[#EBF4FA] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#005592]"
+                  >
+                    Ubah jadwal
+                  </button>
+                </div>
+
+                <div className="grid gap-x-4 gap-y-3 sm:grid-cols-2">
+                  <div>
+                    <label htmlFor="booking-service" className="mb-1.5 block text-xs sm:text-sm font-semibold text-slate-800">Layanan</label>
                     <select
                       id="booking-service"
                       value={formData.serviceType}
                       onChange={(event) => setFormData({ ...formData, serviceType: event.target.value })}
-                      className="form-field"
+                      className="form-field rounded-xl"
                     >
                       <option value="Bangun Rumah Baru">Bangun Rumah Baru</option>
                       <option value="Renovasi Total">Renovasi Total</option>
@@ -389,34 +480,49 @@ export const BookingSection = () => {
                     </select>
                   </div>
                   <div>
-                    <label htmlFor="booking-name" className="mb-1.5 block text-sm font-semibold text-slate-800">Nama lengkap</label>
-                    <input id="booking-name" type="text" autoComplete="name" value={formData.clientName} onChange={(event) => setFormData({ ...formData, clientName: event.target.value })} required className="form-field" />
+                    <label htmlFor="booking-name" className="mb-1.5 block text-xs sm:text-sm font-semibold text-slate-800">Nama lengkap</label>
+                    <input id="booking-name" type="text" autoComplete="name" value={formData.clientName} onChange={(event) => setFormData({ ...formData, clientName: event.target.value })} required className="form-field rounded-xl" />
                   </div>
                   <div>
-                    <label htmlFor="booking-phone" className="mb-1.5 block text-sm font-semibold text-slate-800">Nomor WhatsApp</label>
-                    <input id="booking-phone" type="tel" autoComplete="tel" value={formData.phone} onChange={(event) => setFormData({ ...formData, phone: event.target.value })} required className="form-field" />
+                    <label htmlFor="booking-phone" className="mb-1.5 block text-xs sm:text-sm font-semibold text-slate-800">Nomor WhatsApp</label>
+                    <input id="booking-phone" type="tel" autoComplete="tel" value={formData.phone} onChange={(event) => setFormData({ ...formData, phone: event.target.value })} required className="form-field rounded-xl" />
                   </div>
                   <div>
-                    <label htmlFor="booking-email" className="mb-1.5 block text-sm font-semibold text-slate-800">Alamat email</label>
-                    <input id="booking-email" type="email" autoComplete="email" value={formData.email} onChange={(event) => setFormData({ ...formData, email: event.target.value })} required className="form-field" />
+                    <label htmlFor="booking-email" className="mb-1.5 block text-xs sm:text-sm font-semibold text-slate-800">Alamat email</label>
+                    <input id="booking-email" type="email" autoComplete="email" value={formData.email} onChange={(event) => setFormData({ ...formData, email: event.target.value })} required className="form-field rounded-xl" />
                   </div>
                   <div className="sm:col-span-2">
-                    <label htmlFor="booking-location" className="mb-1.5 block text-sm font-semibold text-slate-800">Lokasi proyek</label>
-                    <input id="booking-location" type="text" autoComplete="street-address" value={formData.location} onChange={(event) => setFormData({ ...formData, location: event.target.value })} required className="form-field" />
+                    <label htmlFor="booking-location" className="mb-1.5 block text-xs sm:text-sm font-semibold text-slate-800">Lokasi proyek</label>
+                    <input id="booking-location" type="text" autoComplete="street-address" value={formData.location} onChange={(event) => setFormData({ ...formData, location: event.target.value })} required className="form-field rounded-xl" />
                   </div>
                   <div className="sm:col-span-2">
-                    <label htmlFor="booking-notes" className="mb-1.5 block text-sm font-semibold text-slate-800">Catatan tambahan <span className="font-normal text-slate-500">(opsional)</span></label>
-                    <textarea id="booking-notes" rows={3} value={formData.notes} onChange={(event) => setFormData({ ...formData, notes: event.target.value })} className="form-field min-h-28 resize-y" />
+                    <label htmlFor="booking-notes" className="mb-1.5 block text-xs sm:text-sm font-semibold text-slate-800">Catatan tambahan <span className="font-normal text-slate-500">(opsional)</span></label>
+                    <textarea id="booking-notes" rows={2} value={formData.notes} onChange={(event) => setFormData({ ...formData, notes: event.target.value })} className="form-field rounded-xl min-h-20 resize-y" />
                   </div>
                 </div>
 
-                <button
-                  type="submit"
-                  disabled={submitting || selectedTimeIsBooked}
-                  className="button-primary w-full disabled:bg-[#80909A]"
-                >
-                  {submitting ? "Menyimpan jadwal..." : "Ajukan Booking Survey Gratis"}
-                </button>
+                <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center">
+                  <button
+                    type="button"
+                    onClick={() => changeStep("schedule")}
+                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[#CBD8DF] bg-white px-6 text-xs font-bold text-[#092436] transition-all hover:bg-[#F8FBFD] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#005592] sm:w-auto"
+                  >
+                    <CaretLeft size={16} weight="bold" aria-hidden="true" />
+                    <span>Kembali</span>
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={submitting || selectedTimeIsBooked}
+                    className="group flex min-h-12 flex-1 items-center justify-between rounded-full bg-[#005592] py-2 pl-6 pr-2 text-xs font-bold text-white shadow-xs transition-all duration-300 hover:bg-[#0066AE] disabled:bg-[#80909A] active:scale-[0.98]"
+                  >
+                    <span>{submitting ? "Menyimpan jadwal..." : "Ajukan Booking Survei Gratis"}</span>
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 transition-transform duration-300 group-hover:translate-x-0.5">
+                      <CaretRight size={14} weight="bold" aria-hidden="true" />
+                    </span>
+                  </button>
+                </div>
+                  </>
+                )}
               </form>
             )}
           </div>

@@ -1,15 +1,17 @@
+"use client";
+
 import {
   Hammer,
-  Home,
-  PaintBucket,
-  PenTool,
-  type LucideIcon,
-} from "lucide-react";
+  HouseLine,
+  PaintBrush,
+  PencilRuler,
+  type Icon,
+} from "@phosphor-icons/react";
 
 export interface ServiceItem {
   title: string;
   image: string;
-  icon: LucideIcon;
+  icon: Icon;
   tag: string;
   description: string;
   features: string[];
@@ -83,7 +85,7 @@ export const services: ServiceItem[] = [
   {
     title: "Bangun Rumah dari Nol",
     image: "/bangun dari 0.png",
-    icon: Home,
+    icon: HouseLine,
     tag: "Konstruksi Total",
     description:
       "Layanan konstruksi lengkap mulai dari pondasi, struktur bertulang, dinding, atap, sampai finishing siap huni.",
@@ -109,7 +111,7 @@ export const services: ServiceItem[] = [
   {
     title: "Desain Arsitektur & RAB",
     image: "/design.png",
-    icon: PenTool,
+    icon: PencilRuler,
     tag: "Perencanaan & 3D",
     description:
       "Perencanaan denah fungsional, visualisasi 3D, gambar kerja teknis, dan rincian biaya untuk keputusan yang lebih pasti.",
@@ -122,7 +124,7 @@ export const services: ServiceItem[] = [
   {
     title: "Desain Interior & Custom Furniture",
     image: "/house design.png",
-    icon: PaintBucket,
+    icon: PaintBrush,
     tag: "Interior & Estetika",
     description:
       "Kitchen set, wardrobe, backdrop TV, dan partisi ruangan dengan ukuran presisi serta material HPL multiplek pilihan.",
