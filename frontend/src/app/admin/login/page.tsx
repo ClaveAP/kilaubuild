@@ -15,7 +15,6 @@ import {
   Lock,
   Mail,
   MessageSquare,
-  ShieldCheck,
 } from "lucide-react";
 import { postApiData } from "@/lib/api";
 
@@ -70,15 +69,15 @@ export default function AdminLoginPage() {
 
   return (
     <main className="grid min-h-screen bg-[#F4F7F8] lg:grid-cols-12">
-      {/* Left Column: Architectural Bento Hero Panel */}
-      <section className="relative hidden min-h-screen overflow-hidden bg-[#004475] text-white lg:col-span-5 lg:flex lg:flex-col lg:justify-between lg:p-12 xl:col-span-5 xl:p-14">
+      {/* Left Column: Architectural Bento Hero Panel (Dominant Proportions) */}
+      <section className="relative hidden min-h-screen overflow-hidden bg-[#004475] text-white lg:col-span-7 lg:flex lg:flex-col lg:justify-between lg:p-12 xl:col-span-7 xl:p-16 2xl:col-span-7">
         {/* Authentic Background Architectural Image & Overlays */}
         <Image
           src="/bangun dari 0.png"
           alt="KilauBuild Proyek Konstruksi & Arsitektur"
           fill
           priority
-          sizes="50vw"
+          sizes="60vw"
           className="object-cover object-center opacity-30"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#071A2B] via-[#004475]/85 to-[#004475]/60" />
@@ -99,12 +98,7 @@ export default function AdminLoginPage() {
 
         {/* Center: Editorial Heading & Bento Trust Cards */}
         <div className="relative z-10 my-auto py-8">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-xs font-semibold text-[#E1F0FA] backdrop-blur-md">
-            <ShieldCheck className="h-4 w-4 text-[#66B2E0]" aria-hidden="true" />
-            <span>Area Khusus Tim Internal</span>
-          </div>
-
-          <h1 className="mt-5 font-heading text-3xl font-extrabold leading-tight tracking-[-0.035em] text-white xl:text-4xl">
+          <h1 className="font-heading text-3xl font-extrabold leading-tight tracking-[-0.035em] text-white xl:text-4xl 2xl:text-5xl">
             Kelola jadwal, pesan, dan progres proyek dari satu tempat.
           </h1>
 
@@ -154,8 +148,8 @@ export default function AdminLoginPage() {
         </div>
       </section>
 
-      {/* Right Column: Rounded-[2rem] Login Card */}
-      <section className="flex min-h-screen items-center justify-center px-4 py-12 sm:px-8 lg:col-span-7 xl:col-span-7">
+      {/* Right Column: Rounded-[2rem] Login Card (Focused Proportions) */}
+      <section className="flex min-h-screen items-center justify-center px-4 py-12 sm:px-8 lg:col-span-5 xl:col-span-5 2xl:col-span-5">
         <div className="w-full max-w-md">
           {/* Mobile Top Brand Header */}
           <div className="mb-6 flex items-center justify-between lg:hidden">
@@ -216,7 +210,7 @@ export default function AdminLoginPage() {
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
                     required
-                    className="form-field !pl-12 !pr-4 focus:border-[#005592] focus:ring-3 focus:ring-[#66B2E0]/25"
+                    className="form-field !pl-12 !pr-4 transition-all duration-150 focus:border-[#005592] focus:ring-4 focus:ring-[#005592]/14 focus:outline-none focus-visible:outline-none"
                   />
                 </div>
               </div>
@@ -238,7 +232,7 @@ export default function AdminLoginPage() {
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
                     required
-                    className="form-field !pl-12 !pr-12 focus:border-[#005592] focus:ring-3 focus:ring-[#66B2E0]/25"
+                    className="form-field !pl-12 !pr-12 transition-all duration-150 focus:border-[#005592] focus:ring-4 focus:ring-[#005592]/14 focus:outline-none focus-visible:outline-none"
                   />
                   <button
                     type="button"

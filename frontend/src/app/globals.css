@@ -109,7 +109,7 @@ button:disabled {
   background: var(--brand-primary);
 }
 
-:focus-visible {
+:focus-visible:not(input):not(select):not(textarea) {
   outline: 3px solid var(--brand-accent);
   outline-offset: 3px;
 }
@@ -233,19 +233,26 @@ button:disabled {
     padding: 0.75rem 0.875rem;
     color: var(--ink);
     font-size: 1rem;
+    outline: none !important;
     transition:
       border-color 160ms ease-out,
       box-shadow 160ms ease-out;
+  }
+
+  .form-field:hover {
+    border-color: #8b9ea9;
   }
 
   .form-field::placeholder {
     color: #71818d;
   }
 
-  .form-field:focus {
+  .form-field:focus,
+  .form-field:focus-visible {
     border-color: var(--brand-primary);
-    box-shadow: 0 0 0 3px rgba(102, 178, 224, 0.26);
-    outline: none;
+    box-shadow: 0 0 0 4px rgba(0, 85, 146, 0.14);
+    outline: none !important;
+    outline-offset: 0 !important;
   }
 }
 
