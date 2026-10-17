@@ -28,5 +28,5 @@ KilauBuild adalah platform digital terintegrasi untuk perusahaan kontraktor dan 
 ## Confirmed Assets & Brand Commitments
 - **Palette**: Deep Sapphire Blue (`#005592`), Ocean Blue (`#0066AE`), Sky Accent (`#66B2E0`), Dark Navy (`#004475`), Soft Tint (`#EBF4FA`).
 - **Typography**: Headings: `Roboto` / `Plus Jakarta Sans`, Body: `Inter`.
-- **Assets**: Authentic project photos and brand assets stored in `_backup_data/brand_assets/` and `frontend/public/`.
+- **Assets**: Authentic project photos and brand assets stored in `frontend/public/`.
 - **Contact**: WhatsApp `+62 877-7636-0795`, Email `kilaubuild@gmail.com`.

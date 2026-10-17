@@ -40,9 +40,9 @@ Dokumen ini mendokumentasikan sistem desain, token warna, tipografi, dan aset vi
 
 ---
 
-## 4. Brand & UI Assets (Tersimpan di `_backup_data/`)
+## 4. Brand & UI Assets (Tersimpan di `frontend/public/`)
 Semua aset asli sudah diekstrak dan siap di-import ke Next.js (`frontend/public/`):
-- Logo: `_backup_data/brand_assets/logo.png`, `logo-kilau-build.jpg`
+- Logo: `logo.png`, `logo-kilau-build.jpg`
 - Hero Headers: `header.png`, `headerhompage.png`, `header-hk.png`, `header-kb.png`, `header-lk.png`
 - Layanan & Konstruksi:
   - `bangun dari 0.png`

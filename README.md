@@ -101,8 +101,7 @@ pjbl/
 │   ├── src/app/        # Rute publik & rute internal admin (/admin)
 │   ├── src/components/ # Komponen UI reaktif (Hero, Portfolio, Booking, dll.)
 │   └── public/         # Asset visual otentik, foto proyek, dan logo
-├── docs/               # Dokumentasi spesifikasi (PRD, SCHEMA, API_SPEC, DESIGN_SYSTEM)
-└── _backup_data/       # Koleksi foto proyek asli, logo, dan file database seeder
+└── docs/               # Dokumentasi spesifikasi (PRD, SCHEMA, API_SPEC, DESIGN_SYSTEM)
 ```
 
 ### Daftar Teknologi:

@@ -10,7 +10,6 @@ Selamat datang di proyek **KilauBuild**! Dokumen ini adalah panduan standar dan 
   - `backend/`: NestJS REST API + Prisma ORM + Swagger OpenAPI.
   - `frontend/`: Next.js (App Router) + Tailwind CSS + Modern UI components.
   - `database`: Neon Serverless PostgreSQL.
-  - `_backup_data/`: Berisi foto-foto asli portofolio, logo, dan file dump SQL lama untuk kebutuhan seeder.
   - `docs/`: Spesifikasi lengkap (`PRD.md`, `SCHEMA.md`, `API_SPEC.md`).
 
 ---
@@ -60,9 +59,9 @@ Selamat datang di proyek **KilauBuild**! Dokumen ini adalah panduan standar dan 
      * Dark Navy: `#004475`
      * Soft Blue Background: `#EBF4FA` / `#E3F2FD`
    - Tipografi: Heading menggunakan `Roboto` / `Plus Jakarta Sans`, Body text menggunakan `Inter`.
-   - Gunakan banner hero, logo, dan ikon layanan yang sudah diamankan di `_backup_data/brand_assets/fe_assets/`.
+   - Gunakan banner hero, logo, dan ikon layanan yang sudah diamankan di `frontend/public/`.
    - Sediakan skeleton loader saat data sedang di-fetch dan empty state yang ramah.
-   - Jangan gunakan gambar placeholder rusak: gunakan asset yang ada di `_backup_data/uploaded_assets` atau Unsplash/AI asset yang relevan.
+   - Jangan gunakan gambar placeholder rusak: gunakan asset yang ada di `frontend/public/uploads/` atau Unsplash/AI asset yang relevan.
 
 ---
 

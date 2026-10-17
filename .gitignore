@@ -34,6 +34,9 @@ yarn-error.log*
 # Prisma Generated / DB
 *.db
 
+# Local Backups & Sensitive Raw Data
+_backup_data/
+
 # AI Tools & Local Skills
 .agents/
 .claude/
