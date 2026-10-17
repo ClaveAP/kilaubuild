@@ -14,9 +14,10 @@
   --color-paper-blue: #eaf3f8;
   --color-line: #cbd8df;
   --color-line-strong: #9db3bf;
-  --font-heading: var(--font-heading), system-ui, sans-serif;
-  --font-sans: var(--font-sans), system-ui, sans-serif;
+  --font-heading: var(--font-editorial), Georgia, serif;
   --font-editorial: var(--font-editorial), Georgia, serif;
+  --font-serif: var(--font-editorial), Georgia, serif;
+  --font-sans: var(--font-sans), system-ui, sans-serif;
   --font-numeric: var(--font-numeric), monospace;
 }
 
@@ -64,11 +65,14 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: var(--font-heading), system-ui, sans-serif;
-  letter-spacing: -0.035em;
+  font-family: var(--font-editorial), Georgia, serif;
+  letter-spacing: -0.025em;
 }
 
-.hero-editorial-title {
+.hero-editorial-title,
+.section-heading,
+.font-heading,
+.font-serif {
   font-family: var(--font-editorial), Georgia, serif;
 }
 
