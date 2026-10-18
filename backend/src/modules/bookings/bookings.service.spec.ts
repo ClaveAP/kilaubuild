@@ -15,6 +15,20 @@ describe('BookingsService', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    (prisma.$transaction as unknown as ReturnType<typeof vi.fn>).mockImplementation(async (callback: (tx: unknown) => Promise<unknown>) => {
+      return callback({
+        booking: {
+          findMany: vi.fn().mockResolvedValue([]),
+          create: vi.fn().mockImplementation(({ data }) => ({
+            id: 'booking-1',
+            ...data,
+            status: 'PENDING',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          })),
+        },
+      });
+    });
     service = new BookingsService(prisma);
   });
 
@@ -38,10 +52,8 @@ describe('BookingsService', () => {
     });
   });
 
-  it('rejects weekend bookings', async () => {
-    await expect(service.create(createDto('2099-01-03', '10:00'))).rejects.toBeInstanceOf(
-      BadRequestException,
-    );
+  it('allows weekend bookings', async () => {
+    await expect(service.create(createDto('2099-01-03', '10:00'))).resolves.toBeDefined();
   });
 
   it('rejects times outside business hours', async () => {

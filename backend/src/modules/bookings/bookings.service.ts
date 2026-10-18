@@ -21,11 +21,8 @@ export class BookingsService {
     return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
   }
 
-  private assertBusinessDay(date: Date): void {
-    const day = date.getUTCDay();
-    if (day === 0 || day === 6) {
-      throw new BadRequestException('Survey hanya tersedia pada hari kerja, Senin sampai Jumat');
-    }
+  private assertBusinessDay(_date: Date): void {
+    // Semua hari (Senin s/d Minggu) tersedia untuk reservasi survey lapangan
   }
 
   private assertBusinessHour(time: string): void {
@@ -103,7 +100,7 @@ export class BookingsService {
 
     return {
       date: dateStr,
-      isBusinessDay: ![0, 6].includes(targetDate.getUTCDay()),
+      isBusinessDay: true,
       businessHours: { opensAt: '09:00', closesAt: '20:00', intervalMinutes: 30 },
       bookedTimes,
     };
@@ -134,7 +131,7 @@ export class BookingsService {
     return {
       month,
       timezone: 'Asia/Jakarta',
-      businessDays: [1, 2, 3, 4, 5],
+      businessDays: [0, 1, 2, 3, 4, 5, 6],
       businessHours: { opensAt: '09:00', closesAt: '20:00', intervalMinutes: 30 },
       dates: Array.from(groupedDates, ([date, bookedTimes]) => ({
         date,
