@@ -1,11 +1,15 @@
 # Dependencies
 node_modules/
 */node_modules/
+.pnp
+.pnp.*
 
 # Environment Variables & Secrets (MANDATORY)
 .env
 .env.*
 *.env
+*.pem
+*.key
 !.env.example
 !**/.env.example
 
@@ -14,16 +18,23 @@ dist/
 build/
 .next/
 out/
+.vercel/
+*/.vercel/
+.turbo/
+coverage/
 *.tsbuildinfo
 next-env.d.ts
 
 # OS & Logs
 .DS_Store
+Thumbs.db
 *.zip
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+.pnpm-debug.log*
 
 # IDE & Editor
 .vscode/
@@ -33,6 +44,7 @@ yarn-error.log*
 
 # Prisma Generated / DB
 *.db
+*.sqlite
 
 # Local Backups & Sensitive Raw Data
 _backup_data/
@@ -41,5 +53,5 @@ _backup_data/
 .agents/
 .claude/
 .commandcode/
+.superpowers/
 skills-lock.json
-
