@@ -160,3 +160,6 @@ Endpoint publik terkait booking:
 4. **HTTP Header & Payload Security**:
    - `helmet` diaktifkan di NestJS untuk proteksi XSS, clickjacking, dan MIME-sniffing.
    - `ValidationPipe`: `whitelist: true` (membuang payload liar yang tidak ada di DTO) dan `forbidNonWhitelisted: true`.
+5. **Client Mock Fallback (Preview / Vercel Environment)**:
+   - Frontend dilengkapi response interceptor berbasis `mockData.ts` yang otomatis mengalihkan request ke penyimpanan `localStorage` jika koneksi backend offline (`ERR_NETWORK`).
+   - Menyediakan endpoint mocking lengkap untuk 10 modul agar aplikasi dapat diuji coba tanpa server aktif.

@@ -59,10 +59,12 @@
 ## 4. Feature Specifications
 
 ### 4.1. Module: Auth & Security
-- Endpoint login menghasilkan Bearer JWT token (masa berlaku misal 1–7 hari).
+- Endpoint login menghasilkan Bearer JWT token (masa berlaku 1–7 hari).
 - Password di-hash menggunakan `bcrypt` (salt rounds >= 10).
+- Kebijakan Password Ketat: Minimal 8 karakter, wajib kombinasi huruf kapital (A-Z), huruf kecil (a-z), angka (0-9), dan simbol khusus unik (`!@#$%^&*`).
 - Guard berbasis `@UseGuards(JwtAuthGuard)` untuk memproteksi seluruh rute CMS.
-- Fitur ganti password dengan verifikasi password lama.
+- Fitur ganti password dengan verifikasi password lama dan validasi kebijakan password baru.
+- Dukungan Preview / Demo Mode (Vercel): Dilengkapi *Smart Local Storage Fallback* dengan akun demo bawaan (`admin@kilaubuild.com` / `Password123!`) sehingga CMS dapat diuji secara interaktif tanpa ketergantungan server berbayar.
 
 ### 4.2. Module: Statistics
 - Menampilkan metrik seperti: "150+ Proyek Selesai", "98% Klien Puas", "5+ Tahun Pengalaman".

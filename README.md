@@ -18,6 +18,19 @@
 
 ---
 
+## 🌐 Live Demo & Akses CMS Admin di Vercel
+
+Aplikasi web KilauBuild dapat diakses dan diuji coba secara langsung melalui tautan resmi:
+
+* **Website Publik**: [https://kilau-build.vercel.app](https://kilau-build.vercel.app)
+* **Portal Login CMS Admin**: [https://kilau-build.vercel.app/admin/login](https://kilau-build.vercel.app/admin/login)
+  * **Email Admin**: `admin@kilaubuild.com`
+  * **Password**: `Password123!`
+  * **Aturan Keamanan Password**: Wajib minimal 8 karakter, kombinasi huruf besar (A-Z), huruf kecil (a-z), angka (0-9), dan simbol unik (`!@#$%^&*`).
+  * **Fitur Uji Coba Demo**: Dilengkapi *Smart Local Storage Fallback*, memungkinkan penguji mencoba fitur dashboard (manajemen proyek, katalog interior, jadwal survey, pesan klien, testimoni, FAQ) secara interaktif langsung dari browser.
+
+---
+
 ## 🖼️ Tampilan Hero Section (Pratinjau Halaman Utama)
 
 Di bawah ini adalah gambaran visual **Hero Section** saat pengguna pertama kali membuka website KilauBuild:
