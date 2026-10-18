@@ -144,8 +144,11 @@ npm run dev -- --port 3001
 ```
 * Website publik terbuka di browser: `http://localhost:3001`
 * Halaman login CMS Admin: `http://localhost:3001/admin/login`
-  * **Email**: `admin@kilaubuild.com`
-  * **Password**: `Password123!`
+  * **Akun Demo / Percobaan Lokal (Hasil Seeder Dummy — BUKAN Database Asli)**:
+    * **Email**: `admin@kilaubuild.com`
+    * **Password**: `Password123!`
+
+> ⚠️ **Catatan Penting (Hanya untuk Uji Coba)**: Akun dan data di atas hanyalah data **dummy / simulasi percobaan** yang dibuat otomatis oleh script seeder lokal (`backend/prisma/seed.ts`) untuk kemudahan pengujian fitur di komputer lokal pengembang. Ini **BUKAN** database produksi asli.
 
 ---
 
