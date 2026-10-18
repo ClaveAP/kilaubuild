@@ -116,7 +116,7 @@ Garis arsitektur tipis 64px (`4rem`) transparan pada beberapa section untuk memp
 ## 5. UI Assets & Media Directory
 
 Semua asset visual yang digunakan aktif oleh website disimpan di:
-* **Foto Screenshot Hero Section**: `docs/assets/hero-section.png` (digunakan di `README.md`).
+* **Foto Screenshot Hero Section**: `docs/assets/hero-preview.png` (digunakan di `README.md`).
 * **Logo Resmi**: `frontend/public/logo.png`, `frontend/public/logo-kilau-build.jpg`.
 * **Hero Banner Asli**: `frontend/public/headerhompage.png`, `header.png`, `header-hk.png`.
 * **Dokumentasi Proyek Lapangan**:

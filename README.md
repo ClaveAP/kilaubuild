@@ -36,7 +36,7 @@ Aplikasi web KilauBuild dapat diakses dan diuji coba secara langsung melalui tau
 Di bawah ini adalah gambaran visual **Hero Section** saat pengguna pertama kali membuka website KilauBuild:
 
 <div align="center">
-  <img src="docs/assets/hero-section.png" alt="Hero Section KilauBuild" width="100%" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);" />
+  <img src="docs/assets/hero-preview.png" alt="Hero Section KilauBuild" width="100%" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);" />
 </div>
 
 <br />
