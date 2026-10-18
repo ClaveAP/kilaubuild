@@ -122,7 +122,9 @@ export const BookingSection = () => {
         const data = await getApiData<BookingCalendarData>(
           `/bookings/calendar?month=${month}`,
         );
-        if (active) setCalendarDates(data.dates);
+        if (active) {
+          setCalendarDates(Array.isArray(data?.dates) ? data.dates : []);
+        }
       } catch (error: unknown) {
         console.warn("Gagal memuat kalender booking:", error);
         if (active) {
@@ -141,13 +143,17 @@ export const BookingSection = () => {
   }, [calendarMonth, calendarVersion]);
 
   const bookedDates = useMemo(
-    () => calendarDates.map(({ date }) => parseISO(date)),
+    () => (Array.isArray(calendarDates) ? calendarDates.map(({ date }) => parseISO(date)) : []),
     [calendarDates],
   );
 
   const bookedTimes = useMemo(() => {
     const dateKey = format(selectedDate, "yyyy-MM-dd");
-    return calendarDates.find((item) => item.date === dateKey)?.bookedTimes ?? [];
+    return (
+      (Array.isArray(calendarDates)
+        ? calendarDates.find((item) => item.date === dateKey)?.bookedTimes
+        : []) ?? []
+    );
   }, [calendarDates, selectedDate]);
 
   const selectedTimeIsBooked = bookedTimes.some((bookedTime) =>

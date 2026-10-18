@@ -90,7 +90,7 @@ export default function AdminDashboardPage() {
   const handleLogout = () => {
     localStorage.removeItem("kilaubuild_token");
     localStorage.removeItem("kilaubuild_user");
-    router.replace("/admin/login");
+    window.location.href = "/admin/login";
   };
 
   const badges = {

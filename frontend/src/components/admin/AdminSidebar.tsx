@@ -41,16 +41,19 @@ interface NavItem {
   badgeTone?: string;
 }
 
-export const AdminSidebar = ({
+interface UserProfileMenuProps {
+  user: AdminUser | null;
+  initials: string;
+  onOpenChangePassword: () => void;
+  onLogout: () => void;
+}
+
+const UserProfileMenu = ({
   user,
-  activeSection,
-  onSelectSection,
-  isMobileOpen,
-  onCloseMobile,
+  initials,
   onOpenChangePassword,
   onLogout,
-  badges = {},
-}: AdminSidebarProps) => {
+}: UserProfileMenuProps) => {
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
 
@@ -67,6 +70,99 @@ export const AdminSidebar = ({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [profileMenuOpen]);
+
+  return (
+    <div className="relative border-t border-[#E1E9ED] p-3" ref={profileRef}>
+      <button
+        type="button"
+        onClick={() => setProfileMenuOpen((prev) => !prev)}
+        className="flex w-full items-center justify-between rounded-xl p-2 text-left transition-colors hover:bg-[#F4F7F8] focus:outline-none cursor-pointer"
+        aria-expanded={profileMenuOpen}
+      >
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#004475] text-xs font-bold text-white shadow-xs">
+            {initials}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-xs font-bold text-[#0A1E2F]">
+              {user?.name || "Admin"}
+            </p>
+            <p className="truncate text-[10px] text-[#71818D]">
+              {user?.email || "admin@kilaubuild.com"}
+            </p>
+          </div>
+        </div>
+        <ChevronDown
+          className={`h-4 w-4 shrink-0 text-[#8A9BA8] transition-transform duration-200 ${
+            profileMenuOpen ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+
+      {/* Profile Popover / Dropdown Menu */}
+      {profileMenuOpen && (
+        <div
+          onMouseDown={(e) => e.stopPropagation()}
+          className="absolute bottom-full left-3 right-3 mb-2 rounded-2xl border border-[#CBD8DF] bg-white p-2 shadow-xl ring-1 ring-black/5 animate-in fade-in-50 zoom-in-95 z-50"
+        >
+          <div className="rounded-xl bg-[#F8FAFB] p-3">
+            <div className="flex items-center gap-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#005592] text-[10px] font-bold text-white">
+                {initials}
+              </span>
+              <span className="truncate text-xs font-bold text-[#0A1E2F]">
+                {user?.name || "Admin"}
+              </span>
+            </div>
+            <div className="mt-2 flex items-center gap-1.5">
+              <span className="inline-flex items-center gap-1 rounded-md bg-[#005592]/10 px-2 py-0.5 text-[10px] font-bold text-[#005592]">
+                <Shield className="h-3 w-3" />
+                {user?.role || "SUPERADMIN"}
+              </span>
+            </div>
+          </div>
+
+          <div className="my-1.5 border-t border-[#E1E9ED]" />
+
+          <button
+            type="button"
+            onClick={() => {
+              setProfileMenuOpen(false);
+              onOpenChangePassword();
+            }}
+            className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold text-[#294153] transition-colors hover:bg-[#EAF3F8] hover:text-[#005592] cursor-pointer"
+          >
+            <KeyRound className="h-4 w-4 text-[#71818D]" />
+            <span>Ganti Kata Sandi</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setProfileMenuOpen(false);
+              onLogout();
+            }}
+            className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-bold text-red-600 transition-colors hover:bg-red-50 cursor-pointer"
+          >
+            <LogOut className="h-4 w-4 text-red-500" />
+            <span>Keluar Akun</span>
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export const AdminSidebar = ({
+  user,
+  activeSection,
+  onSelectSection,
+  isMobileOpen,
+  onCloseMobile,
+  onOpenChangePassword,
+  onLogout,
+  badges = {},
+}: AdminSidebarProps) => {
 
   const mainNavItems: NavItem[] = [
     {
@@ -228,81 +324,12 @@ export const AdminSidebar = ({
       </div>
 
       {/* Jiron-Style User Profile Item at Sidebar Bottom */}
-      <div className="relative border-t border-[#E1E9ED] p-3" ref={profileRef}>
-        <button
-          type="button"
-          onClick={() => setProfileMenuOpen((prev) => !prev)}
-          className="flex w-full items-center justify-between rounded-xl p-2 text-left transition-colors hover:bg-[#F4F7F8] focus:outline-none"
-          aria-expanded={profileMenuOpen}
-        >
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#004475] text-xs font-bold text-white shadow-xs">
-              {initials}
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-xs font-bold text-[#0A1E2F]">
-                {user?.name || "Admin"}
-              </p>
-              <p className="truncate text-[10px] text-[#71818D]">
-                {user?.email || "admin@kilaubuild.com"}
-              </p>
-            </div>
-          </div>
-          <ChevronDown
-            className={`h-4 w-4 shrink-0 text-[#8A9BA8] transition-transform duration-200 ${
-              profileMenuOpen ? "rotate-180" : ""
-            }`}
-          />
-        </button>
-
-        {/* Profile Popover / Dropdown Menu */}
-        {profileMenuOpen && (
-          <div className="absolute bottom-full left-3 right-3 mb-2 rounded-2xl border border-[#CBD8DF] bg-white p-2 shadow-xl ring-1 ring-black/5 animate-in fade-in-50 zoom-in-95">
-            <div className="rounded-xl bg-[#F8FAFB] p-3">
-              <div className="flex items-center gap-2">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#005592] text-[10px] font-bold text-white">
-                  {initials}
-                </span>
-                <span className="truncate text-xs font-bold text-[#0A1E2F]">
-                  {user?.name || "Admin"}
-                </span>
-              </div>
-              <div className="mt-2 flex items-center gap-1.5">
-                <span className="inline-flex items-center gap-1 rounded-md bg-[#005592]/10 px-2 py-0.5 text-[10px] font-bold text-[#005592]">
-                  <Shield className="h-3 w-3" />
-                  {user?.role || "SUPERADMIN"}
-                </span>
-              </div>
-            </div>
-
-            <div className="my-1.5 border-t border-[#E1E9ED]" />
-
-            <button
-              type="button"
-              onClick={() => {
-                setProfileMenuOpen(false);
-                onOpenChangePassword();
-              }}
-              className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold text-[#294153] transition-colors hover:bg-[#EAF3F8] hover:text-[#005592]"
-            >
-              <KeyRound className="h-4 w-4 text-[#71818D]" />
-              <span>Ganti Kata Sandi</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setProfileMenuOpen(false);
-                onLogout();
-              }}
-              className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-bold text-red-600 transition-colors hover:bg-red-50"
-            >
-              <LogOut className="h-4 w-4 text-red-500" />
-              <span>Keluar Akun</span>
-            </button>
-          </div>
-        )}
-      </div>
+      <UserProfileMenu
+        user={user}
+        initials={initials}
+        onOpenChangePassword={onOpenChangePassword}
+        onLogout={onLogout}
+      />
     </aside>
   );
 
