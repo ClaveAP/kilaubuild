@@ -49,9 +49,5 @@ pnpm-debug.log*
 # Local Backups & Sensitive Raw Data
 _backup_data/
 
-# AI Tools & Local Skills
-.agents/
-.claude/
-.commandcode/
+# AI Tools & Local Skills (Internal temporary scratch only)
 .superpowers/
-skills-lock.json
