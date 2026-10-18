@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { handleMockApi } from './mockData';
 
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
@@ -14,6 +15,7 @@ export const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 8000,
 });
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -61,18 +63,45 @@ api.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
-// Response Interceptor: Tangani error global
+// Response Interceptor: Fallback to Mock Data on Network Error / Offline (Vercel Demo)
 api.interceptors.response.use(
   (response) => response.data,
   (error) => {
+    // Check if network error or connection refused (offline/Vercel without paid backend)
+    const isNetworkError =
+      !error.response ||
+      error.code === 'ERR_NETWORK' ||
+      error.code === 'ECONNABORTED' ||
+      error.message?.toLowerCase().includes('network');
+
+    if (isNetworkError && error.config) {
+      const method = error.config.method || 'GET';
+      const url = error.config.url || '';
+      let requestData: unknown = undefined;
+      try {
+        requestData = error.config.data
+          ? typeof error.config.data === 'string'
+            ? JSON.parse(error.config.data)
+            : error.config.data
+          : undefined;
+      } catch {
+        requestData = error.config.data;
+      }
+
+      const mockData = handleMockApi(method, url, requestData);
+      if (mockData !== null) {
+        return Promise.resolve(mockData);
+      }
+    }
+
     if (error.response?.status === 401 && typeof window !== 'undefined') {
-      // Hapus token kadaluwarsa
       localStorage.removeItem('kilaubuild_token');
       localStorage.removeItem('kilaubuild_user');
       if (window.location.pathname.startsWith('/admin') && window.location.pathname !== '/admin/login') {
         window.location.replace('/admin/login');
       }
     }
+
     return Promise.reject(error.response?.data || error);
   },
 );
