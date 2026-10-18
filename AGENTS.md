@@ -67,6 +67,15 @@ Selamat datang di proyek **KilauBuild**! Dokumen ini adalah panduan standar dan 
 
 ## 4. Workflow & Do's & Don'ts
 
+### Spec-Driven Gate: "No Code Before Spec" (MANDATORI)
+Dokumen di folder `docs/` (`PRD.md`, `SCHEMA.md`, `API_SPEC.md`, `DESIGN_SYSTEM.md`) adalah **Single Source of Truth (SSOT)** dan cetak biru arsitektur KilauBuild.
+1. **Dilarang keras menulis atau mengubah kode** (`.ts`, `.tsx`, `.prisma`, `.css`) jika perubahan logika bisnis, fitur baru, penambahan/perubahan endpoint, modifikasi database, atau perubahan desain **belum tercatat di dokumen spesifikasi terkait**:
+   - Perubahan fungsionalitas / alur produk ➔ Wajib perbarui `docs/PRD.md`.
+   - Perubahan tabel, relasi, enum, tipe kolom ➔ Wajib perbarui `docs/SCHEMA.md`.
+   - Perubahan/penambahan endpoint, parameter, response ➔ Wajib perbarui `docs/API_SPEC.md`.
+   - Perubahan font, warna, styling, komponen UI ➔ Wajib perbarui `docs/DESIGN_SYSTEM.md`.
+2. **Prosedur Otomatis AI**: Saat menerima instruksi dari user yang mengubah perilaku atau menambah fitur aplikasi, AI **WAJIB** memperbarui file `.md` yang relevan terlebih dahulu atau dalam siklus edit yang sama. Jangan pernah meninggalkan dokumen dalam kondisi usang (*out-of-sync*) setelah kode selesai diubah.
+
 ### Prinsip Utama
 - Terapkan **minimum sufficient change**: ubah sesedikit mungkin kode untuk menyelesaikan kebutuhan secara utuh dan benar.
 - Hormati arsitektur, pola, naming, dan dependency yang sudah ada sebelum membuat pola baru.
@@ -111,11 +120,13 @@ Selamat datang di proyek **KilauBuild**! Dokumen ini adalah panduan standar dan 
 - Laporan akhir harus singkat: apa yang berubah, alasan keputusan penting, hasil verifikasi, dan hal yang masih perlu tindakan pengguna.
 
 ### DO
+- Selalu jadikan dokumen di `docs/` (`PRD.md`, `SCHEMA.md`, `API_SPEC.md`, `DESIGN_SYSTEM.md`) sebagai acuan tunggal dan perbarui terlebih dahulu sebelum/bersamaan dengan penulisan kode.
 - Selalu cek `docs/API_SPEC.md` dan `docs/SCHEMA.md` sebelum membuat endpoint atau query baru.
 - Berikan error handling yang jelas menggunakan Exception bawaan NestJS (`NotFoundException`, `BadRequestException`, `UnauthorizedException`).
 - Gunakan environment variables (`.env`) untuk URL database, JWT secret, dan port server.
 
 ### DON'T
+- Dilarang keras menulis kode fitur, endpoint, database, atau styling baru tanpa mencatatkannya di file `docs/` terkait.
 - Dilarang menyimpan credentials atau secret key di dalam kode sumber.
 - Dilarang mengubah skema database secara drastis tanpa mendokumentasikannya di `docs/SCHEMA.md`.
 - Dilarang membuat endpoint tanpa dokumentasi Swagger.
