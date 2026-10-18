@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { ArrowLeft, ArrowRight, ArrowUpRight, MapPin, Pulse, Stack, X } from "@phosphor-icons/react";
 import { getApiData, resolveMediaUrl } from "@/lib/api";
-import { CoverflowCarousel } from "@/components/ui/coverflow-carousel";
 import {
   fallbackDoneProjects,
   fallbackOngoingProjects,
@@ -153,45 +152,117 @@ export const PortfolioSection = () => {
         </div>
 
         {activeTab === "done" ? (
-          <div className="mt-4 lg:flex lg:flex-col lg:justify-center lg:mt-0">
+          <div className="mt-8 lg:mt-10">
             {activeProject ? (
-              <>
-                <CoverflowCarousel
-                  items={doneProjects.map((project) => ({
-                    id: project.id,
-                    image: resolveMediaUrl(project.coverImage, "/header.png"),
-                    alt: project.title,
-                    title: project.title,
-                  }))}
-                  index={visibleProjectIndex}
-                  onIndexChange={setActiveProjectIndex}
-                  onOpen={(index, trigger) => {
-                    triggerRef.current = trigger;
-                    setSelectedProject(doneProjects[index]);
-                  }}
-                />
-                <div className="mx-auto mt-6 flex max-w-3xl flex-col items-start gap-4 rounded-2xl border border-[#E2ECF2] bg-white p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6 shadow-xs">
-                  <div>
-                    <span className="font-numeric text-xs font-bold uppercase tracking-wider text-[#005592]">
-                      {activeProject.category}
-                    </span>
-                    <h3 className="mt-1 text-xl font-bold tracking-tight text-[#092436] sm:text-2xl">{activeProject.title}</h3>
-                  </div>
-                  <button
-                    type="button"
+              <div
+                role="region"
+                aria-roledescription="carousel"
+                aria-label="Proyek selesai"
+                className="outline-none focus-visible:ring-2 focus-visible:ring-[#005592]"
+                tabIndex={0}
+                onKeyDown={(event) => {
+                  if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+                    event.preventDefault();
+                    setActiveProjectIndex((current) => Math.min(Math.max(current + (event.key === "ArrowRight" ? 1 : -1), 0), doneProjects.length - 1));
+                  }
+                }}
+              >
+                <article key={activeProject.id} className="grid gap-8 rounded-[2rem] border border-[#E2ECF2] bg-white p-6 sm:p-9 shadow-[0_12px_36px_-16px_rgba(0,68,117,0.08)] lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)] lg:items-center lg:gap-12">
+                  <div
                     onClick={(event) => {
-                      triggerRef.current = event.currentTarget;
+                      triggerRef.current = event.currentTarget as unknown as HTMLButtonElement;
                       setSelectedProject(activeProject);
                     }}
-                    className="group inline-flex min-h-11 shrink-0 items-center gap-2.5 rounded-full bg-[#005592] pl-5 pr-2 py-1.5 text-xs font-bold text-white shadow-xs transition-all duration-300 hover:bg-[#0066AE] active:scale-[0.98]"
+                    className="group/img relative h-[270px] cursor-pointer overflow-hidden rounded-2xl bg-[#EBF4FA] sm:h-[340px] lg:h-[clamp(300px,42svh,440px)]"
                   >
-                    <span>Buka Dokumentasi</span>
-                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 transition-transform duration-300 group-hover:translate-x-0.5">
-                      <ArrowUpRight size={14} weight="bold" aria-hidden="true" />
+                    <Image
+                      src={resolveMediaUrl(activeProject.coverImage, "/header.png")}
+                      alt={activeProject.title}
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 55vw"
+                      className="object-cover transition-transform duration-700 group-hover/img:scale-[1.03]"
+                    />
+                    <div className="absolute inset-0 bg-[#005592]/0 transition-colors duration-300 group-hover/img:bg-[#005592]/15" />
+                    <span className="absolute bottom-3.5 right-3.5 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3.5 py-1.5 text-xs font-bold text-[#005592] shadow-sm backdrop-blur-md transition-transform duration-300 group-hover/img:scale-105">
+                      Lihat Foto ({activeProject.gallery?.length || 1})
+                      <ArrowUpRight size={13} weight="bold" />
                     </span>
-                  </button>
+                  </div>
+
+                  <div className="max-w-xl">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-[#EBF4FA] px-3 py-1 text-xs font-bold text-[#005592]">
+                        <Stack size={14} weight="bold" aria-hidden="true" />
+                        {activeProject.category}
+                      </span>
+                      <span className="rounded-full border border-emerald-600/20 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                        Proyek Selesai
+                      </span>
+                    </div>
+
+                    <h3 aria-live="polite" className="mt-4 text-2xl font-bold tracking-tight text-[#092436] sm:text-3xl lg:text-4xl">
+                      {activeProject.title}
+                    </h3>
+
+                    <p className="mt-3 text-sm sm:text-base leading-relaxed text-[#526474]">
+                      {activeProject.description || "Hasil pekerjaan konstruksi dan interior yang telah selesai diserahterimakan dengan berita acara fisik lengkap."}
+                    </p>
+
+                    <div className="mt-6 flex flex-col gap-4 rounded-2xl border border-[#E2ECF2] bg-[#F8FBFD] p-5 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <span className="text-xs font-semibold text-[#526474]">Lingkup Pekerjaan</span>
+                        <p className="mt-1 text-base font-bold text-[#092436]">{activeProject.budgetRange || activeProject.category}</p>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          triggerRef.current = event.currentTarget;
+                          setSelectedProject(activeProject);
+                        }}
+                        className="group inline-flex min-h-11 shrink-0 items-center gap-2.5 rounded-full bg-[#005592] pl-5 pr-2 py-1.5 text-xs font-bold text-white shadow-xs transition-all duration-300 hover:bg-[#0066AE] active:scale-[0.98]"
+                      >
+                        <span>Buka Dokumentasi</span>
+                        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 transition-transform duration-300 group-hover:translate-x-0.5">
+                          <ArrowUpRight size={14} weight="bold" aria-hidden="true" />
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </article>
+
+                <div className="mt-6 flex flex-wrap items-center justify-between gap-4 pt-2">
+                  <p className="text-xs sm:text-sm font-semibold text-[#526474]" aria-live="polite">
+                    Proyek <span className="font-numeric text-[#005592]">{String(visibleProjectIndex + 1).padStart(2, "0")} / {String(doneProjects.length).padStart(2, "0")}</span>
+                  </p>
+                  {doneProjects.length > 1 && (
+                    <div className="flex items-center gap-2.5">
+                      <button
+                        type="button"
+                        disabled={visibleProjectIndex === 0}
+                        onClick={() => setActiveProjectIndex(visibleProjectIndex - 1)}
+                        className="group inline-flex min-h-10 items-center gap-2 rounded-full border border-[#CBD8DF] bg-white py-1 pl-1.5 pr-4 text-xs font-bold text-[#092436] transition-all hover:border-[#005592]/30 hover:bg-[#F8FBFD] disabled:cursor-not-allowed disabled:opacity-40"
+                      >
+                        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#EAF3F8] text-[#005592] transition-transform duration-300 group-hover:-translate-x-0.5">
+                          <ArrowLeft size={13} weight="bold" aria-hidden="true" />
+                        </span>
+                        <span>Sebelumnya</span>
+                      </button>
+                      <button
+                        type="button"
+                        disabled={visibleProjectIndex === doneProjects.length - 1}
+                        onClick={() => setActiveProjectIndex(visibleProjectIndex + 1)}
+                        className="group inline-flex min-h-10 items-center gap-2 rounded-full bg-[#005592] py-1 pl-4 pr-1.5 text-xs font-bold text-white transition-all hover:bg-[#0066AE] disabled:cursor-not-allowed disabled:opacity-40"
+                      >
+                        <span>Berikutnya</span>
+                        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 transition-transform duration-300 group-hover:translate-x-0.5">
+                          <ArrowRight size={13} weight="bold" aria-hidden="true" />
+                        </span>
+                      </button>
+                    </div>
+                  )}
                 </div>
-              </>
+              </div>
             ) : (
               <p className="py-16 text-center text-[#526474]">Belum ada proyek selesai untuk ditampilkan.</p>
             )}
@@ -262,11 +333,27 @@ export const PortfolioSection = () => {
                   </p>
                   {ongoingProjects.length > 1 && (
                     <div className="flex items-center gap-2.5">
-                      <button type="button" disabled={visibleOngoingIndex === 0} onClick={() => setActiveOngoingIndex(visibleOngoingIndex - 1)} className="inline-flex min-h-10 items-center gap-2 rounded-full border border-[#CBD8DF] bg-white px-4 text-xs font-bold text-[#092436] transition-all hover:bg-[#F8FBFD] disabled:cursor-not-allowed disabled:opacity-40">
-                        <ArrowLeft size={15} weight="bold" aria-hidden="true" /> Sebelumnya
+                      <button
+                        type="button"
+                        disabled={visibleOngoingIndex === 0}
+                        onClick={() => setActiveOngoingIndex(visibleOngoingIndex - 1)}
+                        className="group inline-flex min-h-10 items-center gap-2 rounded-full border border-[#CBD8DF] bg-white py-1 pl-1.5 pr-4 text-xs font-bold text-[#092436] transition-all hover:border-[#005592]/30 hover:bg-[#F8FBFD] disabled:cursor-not-allowed disabled:opacity-40"
+                      >
+                        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#EAF3F8] text-[#005592] transition-transform duration-300 group-hover:-translate-x-0.5">
+                          <ArrowLeft size={13} weight="bold" aria-hidden="true" />
+                        </span>
+                        <span>Sebelumnya</span>
                       </button>
-                      <button type="button" disabled={visibleOngoingIndex === ongoingProjects.length - 1} onClick={() => setActiveOngoingIndex(visibleOngoingIndex + 1)} className="inline-flex min-h-10 items-center gap-2 rounded-full bg-[#005592] px-4 text-xs font-bold text-white transition-all hover:bg-[#0066AE] disabled:cursor-not-allowed disabled:opacity-40">
-                        Berikutnya <ArrowRight size={15} weight="bold" aria-hidden="true" />
+                      <button
+                        type="button"
+                        disabled={visibleOngoingIndex === ongoingProjects.length - 1}
+                        onClick={() => setActiveOngoingIndex(visibleOngoingIndex + 1)}
+                        className="group inline-flex min-h-10 items-center gap-2 rounded-full bg-[#005592] py-1 pl-4 pr-1.5 text-xs font-bold text-white transition-all hover:bg-[#0066AE] disabled:cursor-not-allowed disabled:opacity-40"
+                      >
+                        <span>Berikutnya</span>
+                        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 transition-transform duration-300 group-hover:translate-x-0.5">
+                          <ArrowRight size={13} weight="bold" aria-hidden="true" />
+                        </span>
                       </button>
                     </div>
                   )}
@@ -304,7 +391,7 @@ export const PortfolioSection = () => {
                 ref={closeButtonRef}
                 type="button"
                 onClick={() => setSelectedProject(null)}
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#EAF3F8] text-[#004475] transition-colors hover:bg-[#DCECF5]"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#EAF3F8] text-[#004475] transition-colors hover:bg-[#DCECF5]"
                 aria-label="Tutup galeri"
               >
                 <X size={20} weight="bold" aria-hidden="true" />

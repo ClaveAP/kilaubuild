@@ -4,7 +4,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   addMonths,
   format,
-  isWeekend,
   parseISO,
   startOfDay,
   startOfMonth,
@@ -59,10 +58,9 @@ interface BookingCalendarData {
 
 type BookingStep = "schedule" | "details";
 
-const getNextBusinessDay = (): Date => {
+const getNextAvailableDay = (): Date => {
   const date = startOfDay(new Date());
   date.setDate(date.getDate() + 1);
-  while (isWeekend(date)) date.setDate(date.getDate() + 1);
   return date;
 };
 
@@ -88,9 +86,9 @@ const formatDisplayDate = (date: Date): string =>
   }).format(date);
 
 export const BookingSection = () => {
-  const [selectedDate, setSelectedDate] = useState<Date>(() => getNextBusinessDay());
+  const [selectedDate, setSelectedDate] = useState<Date>(() => getNextAvailableDay());
   const [calendarMonth, setCalendarMonth] = useState<Date>(() =>
-    startOfMonth(getNextBusinessDay()),
+    startOfMonth(getNextAvailableDay()),
   );
   const [selectedTime, setSelectedTime] = useState("09:00");
   const [calendarDates, setCalendarDates] = useState<CalendarDate[]>([]);
@@ -157,11 +155,6 @@ export const BookingSection = () => {
   );
 
   const validateSchedule = (): boolean => {
-    if (isWeekend(selectedDate)) {
-      setErrorMessage("Pilih hari kerja, Senin sampai Jumat.");
-      return false;
-    }
-
     const timeInMinutes = timeToMinutes(selectedTime);
     if (timeInMinutes < 540 || timeInMinutes > 1200 || timeInMinutes % 30 !== 0) {
       setErrorMessage("Pilih jam antara 09.00–20.00 WIB dalam interval 30 menit.");
@@ -376,17 +369,17 @@ export const BookingSection = () => {
                           setErrorMessage(null);
                         }
                       }}
-                      disabled={[{ before: startOfDay(new Date()) }, { dayOfWeek: [0, 6] }]}
+                      disabled={[{ before: startOfDay(new Date()) }]}
                       startMonth={startOfMonth(new Date())}
                       endMonth={addMonths(startOfMonth(new Date()), 12)}
-                      modifiers={{ booked: bookedDates }}
-                      modifiersClassNames={{ booked: "rdp-booked" }}
+                      modifiers={{ booked: bookedDates, sunday: { dayOfWeek: [0] } }}
+                      modifiersClassNames={{ booked: "rdp-booked", sunday: "rdp-sunday" }}
                       showOutsideDays
                       className="booking-calendar"
                     />
                     <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-xs text-slate-600">
                       <span className="inline-flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-[#005592]" />Ada booking</span>
-                      <span className="inline-flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full border border-slate-300 bg-slate-100" />Akhir pekan</span>
+                      <span className="inline-flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-red-500" />Minggu (tetap buka)</span>
                     </div>
                   </div>
 
@@ -505,9 +498,11 @@ export const BookingSection = () => {
                   <button
                     type="button"
                     onClick={() => changeStep("schedule")}
-                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[#CBD8DF] bg-white px-6 text-xs font-bold text-[#092436] transition-all hover:bg-[#F8FBFD] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#005592] sm:w-auto"
+                    className="group inline-flex min-h-12 items-center gap-2.5 rounded-full border border-[#CBD8DF] bg-white py-1.5 pl-2 pr-5 text-xs font-bold text-[#092436] transition-all hover:border-[#005592]/30 hover:bg-[#F8FBFD] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#005592] sm:w-auto"
                   >
-                    <CaretLeft size={16} weight="bold" aria-hidden="true" />
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#EAF3F8] text-[#005592] transition-transform duration-300 group-hover:-translate-x-0.5">
+                      <CaretLeft size={14} weight="bold" aria-hidden="true" />
+                    </span>
                     <span>Kembali</span>
                   </button>
                   <button

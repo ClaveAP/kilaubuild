@@ -136,9 +136,12 @@ export const ContactSection = () => {
               <button
                 type="button"
                 onClick={() => setSuccess(false)}
-                className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full border border-[#CBD8DF] bg-white px-6 text-xs font-bold text-[#092436] transition-all hover:bg-[#F8FBFD]"
+                className="group mt-6 inline-flex min-h-11 items-center gap-2.5 rounded-full border border-[#CBD8DF] bg-white py-1.5 pl-5 pr-2 text-xs font-bold text-[#092436] transition-all hover:border-[#005592]/30 hover:bg-[#F8FBFD]"
               >
-                Kirim pesan lain
+                <span>Kirim pesan lain</span>
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#EAF3F8] text-[#005592] transition-transform duration-300 group-hover:translate-x-0.5">
+                  <ArrowUpRight size={14} weight="bold" aria-hidden="true" />
+                </span>
               </button>
             </div>
           ) : (

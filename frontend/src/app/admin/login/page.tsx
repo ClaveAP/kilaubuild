@@ -263,9 +263,11 @@ export default function AdminLoginPage() {
           <div className="mt-6 flex items-center justify-center">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 rounded-full border border-[#CBD8DF] bg-white px-5 py-2.5 text-xs font-bold text-[#526474] transition-colors hover:bg-[#EAF3F8] hover:text-[#005592]"
+              className="group inline-flex min-h-10 items-center gap-2.5 rounded-full border border-[#CBD8DF] bg-white py-1.5 pl-2 pr-5 text-xs font-bold text-[#526474] transition-colors hover:border-[#005592]/30 hover:bg-[#EAF3F8] hover:text-[#005592]"
             >
-              <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
+              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#EAF3F8] text-[#005592] transition-transform duration-300 group-hover:-translate-x-0.5">
+                <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
+              </span>
               <span>Kembali ke Beranda Publik</span>
             </Link>
           </div>

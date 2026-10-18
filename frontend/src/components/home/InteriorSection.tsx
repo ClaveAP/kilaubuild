@@ -163,9 +163,12 @@ export const InteriorSection = () => {
             <button
               type="button"
               onClick={() => setFilter("Semua")}
-              className="mt-5 inline-flex min-h-11 items-center justify-center rounded-full bg-[#005592] px-6 text-xs font-bold text-white shadow-xs transition-all hover:bg-[#0066AE]"
+              className="group mt-5 inline-flex min-h-11 items-center gap-2.5 rounded-full bg-[#005592] py-1.5 pl-5 pr-2 text-xs font-bold text-white shadow-xs transition-all duration-300 hover:bg-[#0066AE] active:scale-[0.98]"
             >
-              Lihat semua interior
+              <span>Lihat semua interior</span>
+              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 transition-transform duration-300 group-hover:translate-x-0.5">
+                <ArrowRight size={14} weight="bold" aria-hidden="true" />
+              </span>
             </button>
           </div>
         )}

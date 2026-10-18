@@ -43,32 +43,26 @@ export const CompanyAboutSection = () => {
         </div>
 
         {/* Content Bento Grid */}
-        <div className="mt-12 grid gap-6 lg:grid-cols-12 lg:items-stretch lg:gap-8">
+        <div className="mt-12 grid gap-6 lg:grid-cols-12 lg:items-start lg:gap-8">
           {/* Left Column: Founder Showcase (Warm, Grounded, Human) */}
           <motion.div
             initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
             whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.45, ease: "easeOut" }}
-            className="flex flex-col justify-between rounded-[2rem] border border-[#E2ECF2] bg-white p-6 sm:p-8 shadow-[0_12px_36px_-16px_rgba(0,68,117,0.08)] lg:col-span-5"
+            className="flex flex-col rounded-[2rem] border border-[#E2ECF2] bg-white p-6 sm:p-8 shadow-[0_12px_36px_-16px_rgba(0,68,117,0.08)] lg:col-span-5"
           >
             <div>
-              {/* Photo Frame */}
-              <div className="relative aspect-[16/11] w-full overflow-hidden rounded-2xl bg-[#EBF4FA] shadow-xs">
+              {/* Photo Frame - Half Body */}
+              <div className="relative h-[340px] sm:h-[390px] w-full overflow-hidden rounded-2xl bg-[#EBF4FA] shadow-xs">
                 <Image
                   src="/owner.jpeg"
                   alt="Bagus, Founder & Pengawas Lapangan KilauBuild"
                   fill
                   sizes="(max-width: 1024px) 100vw, 40vw"
-                  className="object-cover object-top transition-transform duration-700 hover:scale-[1.03]"
+                  className="object-cover object-[center_18%] transition-transform duration-700 hover:scale-[1.03]"
                   priority
                 />
-                <div className="absolute left-3.5 top-3.5 rounded-full bg-white/95 px-3 py-1 text-[11px] font-bold text-[#005592] shadow-xs backdrop-blur-md">
-                  Bagus · Founder
-                </div>
-                <div className="absolute right-3.5 top-3.5 rounded-full bg-[#092436]/80 px-2.5 py-1 text-[10px] font-medium text-white backdrop-blur-md">
-                  Depok &amp; Jabodetabek
-                </div>
               </div>
 
               {/* Founder Credentials & Personal Quote */}
@@ -140,7 +134,7 @@ export const CompanyAboutSection = () => {
           </motion.div>
 
           {/* Right Column: Dynamic Asymmetrical Bento */}
-          <div className="flex flex-col justify-between gap-4 lg:col-span-7">
+          <div className="flex flex-col gap-4 sm:gap-5 lg:col-span-7">
             {/* Bento Card 1: Flagship Principle (Bangun Dulu, Baru Bayar) */}
             <motion.div
               initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
@@ -171,28 +165,28 @@ export const CompanyAboutSection = () => {
               </p>
 
               {/* 4-Step Milestone Progress Bar */}
-              <div className="mt-6 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+              <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {paymentSteps.map((step, sIdx) => {
                   const isFinal = sIdx === paymentSteps.length - 1;
                   return (
                     <div
                       key={step.step}
-                      className={`rounded-xl p-3 border transition-colors ${
+                      className={`rounded-2xl p-3.5 sm:p-4 border transition-colors ${
                         isFinal
                           ? "border-[#005592]/30 bg-[#005592]/8 text-[#005592]"
                           : "border-[#CBD8DF]/60 bg-white/85 text-[#092436]"
                       }`}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="font-numeric text-[10px] font-bold text-[#005592]">
+                        <span className="font-numeric text-xs sm:text-sm font-extrabold text-[#005592]">
                           {step.step}
                         </span>
                         {isFinal ? (
-                          <ShieldCheck size={14} weight="bold" className="text-[#005592]" />
+                          <ShieldCheck size={16} weight="bold" className="text-[#005592]" />
                         ) : null}
                       </div>
-                      <p className="mt-1 text-xs font-bold">{step.title}</p>
-                      <p className="mt-0.5 text-[10px] leading-tight text-[#526474]">
+                      <p className="mt-1.5 text-sm sm:text-base font-bold text-[#092436]">{step.title}</p>
+                      <p className="mt-1 text-xs sm:text-[13px] leading-snug text-[#526474]">
                         {step.desc}
                       </p>
                     </div>

@@ -211,10 +211,12 @@ export const Navbar = () => {
                     e.preventDefault();
                     handleScrollTo("booking");
                   }}
-                  className="button-primary mt-3 flex items-center justify-center gap-2"
+                  className="group mt-3 flex min-h-11 w-full items-center justify-between rounded-full bg-[#005592] py-1.5 pl-5 pr-2 text-xs font-bold text-white shadow-xs transition-all duration-300 hover:bg-[#0066AE] active:scale-[0.98]"
                 >
-                  Jadwalkan survey
-                  <ArrowUpRight size={16} weight="bold" aria-hidden="true" />
+                  <span>Jadwalkan Survey</span>
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
+                    <ArrowUpRight size={14} weight="bold" aria-hidden="true" />
+                  </span>
                 </a>
               </div>
             </motion.nav>
@@ -226,14 +228,11 @@ export const Navbar = () => {
       <aside className="fixed inset-y-0 left-0 z-50 hidden w-[244px] flex-col overflow-y-auto border-r border-[#D7E4EB] bg-[#F3F9FC] px-6 py-8 lg:flex">
         {brand}
 
-        {/* Location & Coverage Badge (Clean & Non-truncated, Zero AI Green Dot) */}
-        <div className="mt-4 flex items-center justify-between rounded-xl border border-[#D7E4EB] bg-white/85 px-3 py-2 text-xs shadow-xs transition-colors hover:border-[#CBD8DF]">
-          <div className="flex items-center gap-1.5">
-            <MapPin size={14} weight="bold" className="text-[#005592]" />
-            <span className="text-[11px] font-semibold text-[#0A1E2F]">Depok &amp; Sekitarnya</span>
-          </div>
-          <span className="rounded-md bg-[#EAF3F8] px-2 py-0.5 text-[10px] font-bold text-[#005592]">
-            Aktif
+        {/* Location & Coverage (Clean Micro-Info, Non-button) */}
+        <div className="mt-3.5 flex items-center gap-1.5 px-0.5 text-[#526474]">
+          <MapPin size={13} weight="bold" className="shrink-0 text-[#005592]" />
+          <span className="text-[11px] font-medium tracking-wide text-[#526474]">
+            Melayani Depok &amp; Sekitarnya
           </span>
         </div>
 
@@ -295,10 +294,12 @@ export const Navbar = () => {
               e.preventDefault();
               handleScrollTo("booking");
             }}
-            className="group button-primary mt-4 flex w-full items-center justify-center gap-2 rounded-xl text-xs transition-all duration-300 hover:shadow-[0_6px_20px_-4px_rgba(0,85,146,0.35)] active:scale-[0.98]"
+            className="group mt-4 flex min-h-11 w-full items-center justify-between rounded-full bg-[#005592] py-1.5 pl-5 pr-2 text-xs font-bold text-white shadow-xs transition-all duration-300 hover:bg-[#0066AE] hover:shadow-md active:scale-[0.98]"
           >
-            <span>Jadwalkan survey</span>
-            <ArrowUpRight size={14} weight="bold" className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            <span>Jadwalkan Survey</span>
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
+              <ArrowUpRight size={14} weight="bold" className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </span>
           </a>
         </div>
       </aside>

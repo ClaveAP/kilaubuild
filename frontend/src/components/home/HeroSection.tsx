@@ -35,17 +35,21 @@ export const HeroSection = () => {
           <div className="mt-6 flex flex-wrap items-center gap-3 sm:mt-8">
             <a
               href="#booking"
-              className="flex items-center justify-center gap-2 rounded-xl bg-[#005592] px-6 py-3.5 text-sm font-bold text-white shadow-sm transition-all hover:bg-[#0066AE] active:scale-[0.98]"
+              className="group flex min-h-12 items-center justify-between gap-3.5 rounded-full bg-[#005592] py-2 pl-6 pr-2.5 text-xs sm:text-sm font-bold text-white shadow-md transition-all duration-300 hover:bg-[#0066AE] hover:shadow-lg active:scale-[0.98]"
             >
-              Diskusikan proyek Anda
-              <ArrowUpRight size={18} weight="bold" aria-hidden="true" />
+              <span>Diskusikan Proyek Anda</span>
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
+                <ArrowUpRight size={16} weight="bold" aria-hidden="true" />
+              </span>
             </a>
             <a
               href="#portofolio"
-              className="flex items-center justify-center gap-2 rounded-xl border border-[#CBD8DF] bg-white px-6 py-3.5 text-sm font-bold text-[#0A1E2F] transition-all hover:bg-[#F8FBFD] active:scale-[0.98]"
+              className="group flex min-h-12 items-center justify-between gap-3.5 rounded-full border border-[#CBD8DF] bg-white py-2 pl-6 pr-2.5 text-xs sm:text-sm font-bold text-[#0A1E2F] shadow-xs transition-all duration-300 hover:border-[#005592]/30 hover:bg-[#F4F7F8] active:scale-[0.98]"
             >
-              Lihat hasil kerja
-              <ArrowRight size={18} weight="bold" aria-hidden="true" />
+              <span>Lihat Hasil Kerja</span>
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#EAF3F8] text-[#005592] transition-transform duration-300 group-hover:translate-x-0.5">
+                <ArrowRight size={16} weight="bold" aria-hidden="true" />
+              </span>
             </a>
           </div>
 
