@@ -22,7 +22,7 @@ Selamat datang di proyek **KilauBuild**! Dokumen ini adalah panduan standar dan 
      - `<feature>.controller.ts`
      - `<feature>.service.ts`
      - `dto/` (misal: `create-<feature>.dto.ts`, `update-<feature>.dto.ts`)
-   - Modul utama: `auth`, `users`, `statistics`, `faqs`, `testimonies`, `projects`, `interior`, `contacts`, `media`, `dashboard`.
+   - Modul utama: `auth`, `users`, `statistics`, `faqs`, `testimonies`, `projects`, `interior`, `contacts`, `bookings`, `media`, `dashboard`.
 
 2. **Strict TypeScript & Zero `any`**:
    - Dilarang keras menggunakan tipe `any`. Selalu definisikan tipe DTO, interface, atau return type yang eksplisit.
@@ -58,7 +58,7 @@ Selamat datang di proyek **KilauBuild**! Dokumen ini adalah panduan standar dan 
      * Accent Sky Blue: `#66B2E0`
      * Dark Navy: `#004475`
      * Soft Blue Background: `#EBF4FA` / `#E3F2FD`
-   - Tipografi: Heading menggunakan `Roboto` / `Plus Jakarta Sans`, Body text menggunakan `Inter`.
+   - Tipografi: Seluruh Heading, Body text, dan Angka menggunakan `Poppins`. Aksen editorial serif menggunakan `Georgia` (italic).
    - Gunakan banner hero, logo, dan ikon layanan yang sudah diamankan di `frontend/public/`.
    - Sediakan skeleton loader saat data sedang di-fetch dan empty state yang ramah.
    - Jangan gunakan gambar placeholder rusak: gunakan asset yang ada di `frontend/public/uploads/` atau Unsplash/AI asset yang relevan.

@@ -133,7 +133,7 @@ Endpoint publik terkait booking:
 
 | Method | Endpoint | Deskripsi |
 | :--- | :--- | :--- |
-| `POST` | `/bookings` | Ajukan survey pada hari kerja dengan jam pilihan sendiri antara 09:00–20:00 WIB |
+| `POST` | `/bookings` | Ajukan survey lokasi (tersedia setiap hari, Senin s/d Minggu) antara 09:00–20:00 WIB (interval 30 menit) |
 | `GET` | `/bookings/availability?date=YYYY-MM-DD` | Lihat jam yang sudah terisi pada satu tanggal |
 | `GET` | `/bookings/calendar?month=YYYY-MM` | Lihat tanggal dan jam yang sudah memiliki booking dalam satu bulan tanpa data pribadi klien |
 

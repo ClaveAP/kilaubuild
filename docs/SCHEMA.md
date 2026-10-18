@@ -198,7 +198,7 @@ model Booking {
   phone         String        // WhatsApp number
   serviceType   String        @map("service_type") // e.g. "Bangun Baru", "Renovasi", "Desain Interior"
   bookingDate   DateTime      @map("booking_date") // Tanggal survey/konsultasi
-  timeSlot      String        @map("time_slot")    // Jam mulai format HH:mm, hari kerja 09:00-20:00 WIB
+  timeSlot      String        @map("time_slot")    // Jam mulai format HH:mm, Senin-Minggu 09:00-20:00 WIB
   location      String        @db.Text             // Alamat lokasi survey
   notes         String?       @db.Text             // Catatan kebutuhan proyek
   status        BookingStatus @default(PENDING)

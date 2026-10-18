@@ -58,7 +58,7 @@ Jalankan frontend dari terminal kedua:
 ```bash
 cd frontend
 npm install
-npm run dev -- --port 3001
+npm run dev
 ```
 
 Frontend lokal terbuka di `http://localhost:3001`, sedangkan backend lokal berjalan di `http://localhost:3000`.

@@ -16,6 +16,7 @@
   - Menjelajahi galeri portofolio (*Project Done* & *Ongoing Projects*) dengan filter kategori dan detail proyek.
   - Membaca ulasan klien (*Testimoni*) dan FAQ.
   - Mengirim pesan atau permintaan penawaran melalui form kontak (*Feedback / Contact Us*).
+  - Melakukan reservasi jadwal survey lokasi gratis via formulir kalender interaktif (*Booking Survey*).
 
 ### 2.2. Admin / Content Manager
 - **Goal**: Memperbarui portofolio berkala, memantau pesan masuk dari calon klien, mengunggah dokumentasi proyek terbaru.
@@ -30,6 +31,7 @@
     - Proyek Berjalan (*Ongoing Project*)
     - Desain Interior
     - Instagram Posts Feed
+  - Mengelola dan mengonfirmasi reservasi survey lapangan (*Bookings Management*).
   - Membaca dan menandai pesan masuk (*Contact/Feedback*).
   - Mengubah password admin secara mandiri.
 
@@ -86,6 +88,14 @@
 - Formulir publik untuk pengunjung yang ingin berkonsultasi.
 - Atribut: Nama, Email, Nomor Telepon/WhatsApp, Subjek, Pesan, Status Dibaca (*isRead*).
 - Hanya Admin yang bisa melihat riwayat pesan dan menandai *isRead*.
+
+### 4.8. Module: Bookings (Reservasi Survey Lapangan)
+- Formulir kalender interaktif bagi calon klien untuk memesan jadwal survey lokasi gratis (tersedia setiap hari Senin s/d Minggu, pukul 09:00–20:00 WIB).
+- Atribut: Nama Lengkap, Nomor WhatsApp/Telepon, Alamat Lengkap Proyek, Jenis Layanan (Bangun Baru, Renovasi, Interior), Tanggal Survey (`date`), Jam Slot (`timeSlot`), Catatan Tambahan (`notes`), Status Reservasi (`PENDING`, `CONFIRMED`, `CANCELLED`, `COMPLETED`).
+- Fitur & Validasi:
+  - Pengecekan slot waktu berinterval 30 menit dengan pencegahan double booking (*concurrency safety*).
+  - Tampilan tanggal hari Minggu dengan highlight khusus untuk memperjelas hari operasional survey.
+- Panel Admin: Notifikasi badge jadwal baru, filter status, pengubahan status (Konfirmasi/Batal), dan integrasi link kontak WhatsApp langsung ke klien.
 
 ---
 

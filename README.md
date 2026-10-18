@@ -105,7 +105,7 @@ pjbl/
 ```
 
 ### Daftar Teknologi:
-* **Frontend**: Next.js 16, React 19, Tailwind CSS v4, Motion (Framer Motion v14), Lucide React & Phosphor Icons.
+* **Frontend**: Next.js 16, React 19, Tailwind CSS v4, Font Poppins & Georgia Serif, Motion (Framer Motion v14), Lucide React & Phosphor Icons.
 * **Backend**: NestJS 12, Express, Prisma ORM 6, Swagger OpenAPI, Passport JWT, Bcrypt, Helmet, Throttler Rate Limiter.
 * **Database**: Neon Serverless PostgreSQL (Singapore Region `ap-southeast-1`).
 * **Deployment**: Dirancang untuk deployment terpisah ke **Vercel** (sebagai project API dan project Web).
@@ -139,8 +139,8 @@ cd frontend
 npm install
 cp .env.example .env.local
 
-# Mulai server frontend Next.js (port 3001)
-npm run dev -- --port 3001
+# Mulai server frontend Next.js (port 3001 otomatis)
+npm run dev
 ```
 * Website publik terbuka di browser: `http://localhost:3001`
 * Halaman login CMS Admin: `http://localhost:3001/admin/login`
