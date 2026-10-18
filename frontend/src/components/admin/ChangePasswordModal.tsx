@@ -34,12 +34,32 @@ export const ChangePasswordModal = ({
     onClose();
   };
 
+  const validatePasswordPolicy = (pwd: string): string | null => {
+    if (pwd.length < 8) {
+      return "Kata sandi baru minimal 8 karakter.";
+    }
+    if (!/[A-Z]/.test(pwd)) {
+      return "Kata sandi baru wajib mengandung minimal 1 huruf kapital (A-Z).";
+    }
+    if (!/[a-z]/.test(pwd)) {
+      return "Kata sandi baru wajib mengandung minimal 1 huruf kecil (a-z).";
+    }
+    if (!/\d/.test(pwd)) {
+      return "Kata sandi baru wajib mengandung minimal 1 angka (0-9).";
+    }
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(pwd)) {
+      return "Kata sandi baru wajib mengandung minimal 1 simbol / karakter unik (!@#$%^&*).";
+    }
+    return null;
+  };
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError(null);
 
-    if (newPassword.length < 6) {
-      setError("Kata sandi baru minimal 6 karakter.");
+    const policyError = validatePasswordPolicy(newPassword);
+    if (policyError) {
+      setError(policyError);
       return;
     }
 
@@ -130,21 +150,24 @@ export const ChangePasswordModal = ({
               htmlFor="new-password"
               className="mb-1.5 block text-xs font-bold text-[#294153]"
             >
-              Kata Sandi Baru (Min. 6 Karakter)
+              Kata Sandi Baru (Min. 8 Karakter)
             </label>
             <div className="relative">
               <input
                 id="new-password"
                 type="password"
                 required
-                minLength={6}
+                minLength={8}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Buat kata sandi baru"
+                placeholder="Minimal 8 karakter, huruf besar & simbol"
                 className="w-full rounded-xl border border-[#CBD8DF] bg-white px-3.5 py-2.5 pl-10 text-xs font-medium text-[#0A1E2F] transition-colors focus:border-[#005592] focus:outline-none focus:ring-2 focus:ring-[#005592]/20"
               />
               <KeyRound className="pointer-events-none absolute left-3.5 top-3 h-4 w-4 text-[#71818D]" />
             </div>
+            <p className="mt-1 text-[10px] text-[#71818D]">
+              Wajib minimal 8 karakter dengan kombinasi huruf besar (A-Z), huruf kecil (a-z), angka (0-9), dan simbol (!@#$%^&*).
+            </p>
           </div>
 
           <div>
